@@ -17,6 +17,7 @@ import {getSelectOptionsListFromData} from "../../../../utils";
 import {OverlayLoader} from "../../../../components/loader";
 import qrcodeImg from "../../../../assets/images/qrcode.png"
 import dayjs from "dayjs";
+import CarNumber from "../../../../components/car-number";
 
 const getEndDateByInsuranceTerm = (term, startDate) => {
     if (!isNil(term)) {
@@ -25,7 +26,7 @@ const getEndDateByInsuranceTerm = (term, startDate) => {
     return dayjs()
 }
 
-const OsgorCreateContainer = ({...rest}) => {
+const OsagaCreateContainer = ({...rest}) => {
     const [person, setPerson] = useState(null)
     const [organization, setOrganization] = useState(null)
     const [insurant, setInsurant] = useState('person')
@@ -45,9 +46,9 @@ const OsgorCreateContainer = ({...rest}) => {
     const setBreadcrumbs = useStore(state => get(state, 'setBreadcrumbs', () => {
     }))
     const breadcrumbs = useMemo(() => [{
-        id: 1, title: 'OSGOR', path: '/osgor/list',
+        id: 1, title: 'OSAGA', path: '/osaga/list',
     }, {
-        id: 2, title: 'Добавить OSGOR', path: '/osgor/create',
+        id: 2, title: 'Добавить OSAGA', path: '/osaga/create',
     }], [])
 
 
@@ -62,6 +63,22 @@ const OsgorCreateContainer = ({...rest}) => {
         key: KEYS.insuranceTerms, url: URLS.insuranceTerms
     })
     const insuranceTermsList = getSelectOptionsListFromData(get(insuranceTerms, `data.result`, []), 'id', 'name')
+
+    const {data: termCategory, isLoading: isLoadingTermCategory} = useGetAllQuery({
+        key: KEYS.termCategories, url: URLS.termCategories
+    })
+    const termCategoryList = getSelectOptionsListFromData(get(termCategory, `data.result`, []), 'id', 'name')
+
+    const {data: accidentType, isLoading: isLoadingAccidentType} = useGetAllQuery({
+        key: KEYS.accidentTypes, url: URLS.accidentTypes
+    })
+    const accidentTypeList = getSelectOptionsListFromData(get(accidentType, `data.result`, []), 'id', 'name')
+
+    const {data: discounts, isLoading: isLoadingDiscount} = useGetAllQuery({
+        key: KEYS.discounts, url: URLS.discounts
+    })
+    const discountList = getSelectOptionsListFromData(get(discounts, `data.result`, []), 'id', 'name')
+
 
     const {data: country, isLoading: isLoadingCountry} = useGetAllQuery({
         key: KEYS.countries, url: URLS.countries
@@ -202,7 +219,7 @@ const OsgorCreateContainer = ({...rest}) => {
             calculatePremium()
         }
     }, [risk, fotSum])
-    if (isLoadingFilials || isLoadingInsuranceTerms || isLoadingCountry || isLoadingRegion) {
+    if (isLoadingFilials || isLoadingAccidentType || isLoadingTermCategory || isLoadingCountry || isLoadingRegion) {
         return <OverlayLoader/>
     }
 
@@ -234,25 +251,18 @@ const OsgorCreateContainer = ({...rest}) => {
                                     <Col xs={5}>Статус</Col>
                                     <Col xs={7}><Button green>Новый</Button></Col>
                                 </Row>
+
                                 <Row align={'center'} className={'mb-25'}>
-                                    <Col xs={5}>Филиал </Col>
-                                    <Col xs={7}><Field params={{required: true}} options={filialList}
-                                                       property={{hideLabel: true}} type={'select'}
-                                                       name={'agencyId'}/></Col>
-                                </Row>
-                                <Row align={'center'} className={'mb-25'}>
-                                    <Col xs={5}>Серия договора:</Col>
+                                    <Col xs={5}>Серия полиса:</Col>
                                     <Col xs={7}><Field property={{hideLabel: true}} type={'input'}
                                                        name={'seria'}/></Col>
                                 </Row>
                                 <Row align={'center'} className={'mb-25'}>
-                                    <Col xs={5}>Номер договора: </Col>
+                                    <Col xs={5}>Номер полиса: </Col>
                                     <Col xs={7}><Field params={{required: true}} property={{hideLabel: true}}
                                                        type={'input'}
                                                        name={'number'}/></Col>
                                 </Row>
-
-
                                 <Row align={'center'} className={'mb-25'}>
                                     <Col xs={6} className={'text-center'}>
                                         <img src={qrcodeImg} alt=""/>
@@ -261,12 +271,19 @@ const OsgorCreateContainer = ({...rest}) => {
                                         <Button type={'button'}>Проверить полис</Button>
                                     </Col>
                                 </Row>
+                                <Row align={'center'} className={'mb-25'}>
+                                    <Col xs={5}>Наличие страховых случаев:</Col>
+                                    <Col xs={7}><Field options={accidentTypeList} params={{required: true}}
+                                                       label={'Accident type'} property={{hideLabel: true}}
+                                                       type={'select'}
+                                                       name={'accident'}/></Col>
+                                </Row>
                             </Col>
                             <Col xs={4}>
 
                                 <Row align={'center'} className={'mb-25'}>
                                     <Col xs={5}>Страховая сумма: </Col>
-                                    <Col xs={7}><Field defaultValue={fotSum}
+                                    <Col xs={7}><Field defaultValue={40000000}
                                                        property={{hideLabel: true, disabled: true}}
                                                        type={'number-format-input'}
                                                        name={'policies[0].insuranceSum'}/></Col>
@@ -278,7 +295,20 @@ const OsgorCreateContainer = ({...rest}) => {
                                                        type={'number-format-input'}
                                                        name={'policies[0].insurancePremium'}/></Col>
                                 </Row>
-
+                                <Row align={'center'} className={'mb-25'}>
+                                    <Col xs={5}>Период использования:</Col>
+                                    <Col xs={7}><Field options={termCategoryList} params={{required: true}}
+                                                       label={'Insurance term'} property={{hideLabel: true}}
+                                                       type={'select'}
+                                                       name={'termCategories'}/></Col>
+                                </Row>
+                                <Row align={'center'} className={'mb-25'}>
+                                    <Col xs={5}>Наличие нарушений:</Col>
+                                    <Col xs={7}><Field options={termCategoryList} params={{required: true}}
+                                                       label={'Insurance term'} property={{hideLabel: true}}
+                                                       type={'select'}
+                                                       name={'termCategories'}/></Col>
+                                </Row>
 
                             </Col>
                             <Col xs={4}>
@@ -288,14 +318,14 @@ const OsgorCreateContainer = ({...rest}) => {
                                     <Col xs={7}><Field options={insuranceTermsList} params={{required: true}}
                                                        label={'Insurance term'} property={{hideLabel: true}}
                                                        type={'select'}
-                                                       name={'policies[0].insuranceTermId'}/></Col>
+                                                       name={'terms'}/></Col>
                                 </Row>
                                 <Row align={'center'} className={'mb-25'}>
                                     <Col xs={5}>Дата начала покрытия: </Col>
                                     <Col xs={7}><Field
                                         property={{hideLabel: true, onChange: (val) => setPoliceStartDate(val)}}
                                         type={'datepicker'}
-                                        name={'policies[0].startDate'}/></Col>
+                                        name={'details.startDate'}/></Col>
                                 </Row>
                                 <Row align={'center'} className={'mb-25'}>
                                     <Col xs={5}>Дача окончания покрытия: </Col>
@@ -303,12 +333,30 @@ const OsgorCreateContainer = ({...rest}) => {
                                         defaultValue={getEndDateByInsuranceTerm(find(get(insuranceTerms, `data.result`, []), (_insuranceTerm) => get(_insuranceTerm, 'id') == insuranceTerm), policeStartDate)}
                                         disabled={!isEqual(insuranceTerm, 6)}
                                         property={{hideLabel: true}} type={'datepicker'}
-                                        name={'policies[0].endDate'}/></Col>
+                                        name={'details.endDate'}/></Col>
                                 </Row>
                                 <Row align={'center'} className={'mb-25'}>
                                     <Col xs={5}>Дата выдачи полиса: </Col>
                                     <Col xs={7}><Field property={{hideLabel: true}} type={'datepicker'}
-                                                       name={'policies[0].issueDate'}/></Col>
+                                                       name={'details.issueDate'}/></Col>
+                                </Row>
+                                <Row align={'center'} className={'mb-25'}>
+                                    <Col xs={5}>Наличие льгот:</Col>
+                                    <Col xs={7}><Field options={discountList} params={{required: true}}
+                                                       label={'Discounts'} property={{hideLabel: true}}
+                                                       type={'select'}
+                                                       name={'discount'}/></Col>
+                                </Row>
+                            </Col>
+                        </Row>
+                        <Row gutterWidth={60} className={'mt-15'}>
+                            <Col xs={12} className={'mb-15'}><Title>Транспортное средство</Title></Col>
+                            <Col xs={4}>
+                                <CarNumber />
+                            </Col>
+                            <Col xs={8}>
+                                <Row>
+
                                 </Row>
                             </Col>
                         </Row>
@@ -621,4 +669,4 @@ const OsgorCreateContainer = ({...rest}) => {
     </>);
 };
 
-export default OsgorCreateContainer;
+export default OsagaCreateContainer;

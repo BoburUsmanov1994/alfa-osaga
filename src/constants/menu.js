@@ -1,37 +1,21 @@
 export const menuData = [
     {
         id: 1,
-        title: 'OSGOR',
-        path: '/osgor',
+        title: 'OSAGA',
+        path: '/osaga',
         submenu: [
             {
                 id: 1,
-                title: 'OSGOR',
-                path: '/osgor/list',
+                title: 'OSAGA list',
+                path: '/osaga/list',
             },
             {
                 id: 2,
-                title: 'OSGOR create',
-                path: '/osgor/create',
+                title: 'Osaga create',
+                path: '/osaga/create',
             },
         ]
     },
-    {
-        id: 2,
-        title: 'OSGOP',
-        path: '/osgop',
-        submenu: [
-            {
-                id: 1,
-                title: 'OSGOP',
-                path: '/osgop/list',
-            },
-            {
-                id: 2,
-                title: 'OSGOP create',
-                path: '/osgop/create',
-            },
-        ]
-    },
+
 
 ]

@@ -4,31 +4,56 @@ import MaskedInput from "react-input-mask";
 
 const Styled = styled.div`
   display: flex;
-  border:2px solid #B7B7B7;
+  border: 2px solid #B7B7B7;
   border-radius: 5px;
+
+  
+
   .input {
-    padding: 12px 18px;
+    padding: 18px 18px;
     color: #000;
-    font-size: 16px;
+    font-size: 48px;
     outline: none;
-    font-family: 'Gilroy-Regular', sans-serif;
+    display: inline !important;
+    border: none;
+    outline: none;
+    background: transparent;
+    font-weight: 400;
+    text-align: center;
+
+    &.first {
+      width: 100px;
+      border-right: 2px solid #B7B7B7;
+    }
+    &.second {
+      width: 100px;
+    }
+    &.third {
+      width: 150px;
+    }
+    &.fourth {
+      width: 130px;
+    }
+    &::placeholder {
+      color: #B0B0B0;
+    }
 
     &.error {
       border-color: #ef466f;
     }
 
     &:focus {
-      border-color: #13D6D1;
+      border-color: transparent;
     }
   }
 `;
 const Index = ({...rest}) => {
     return (
         <Styled {...rest}>
-            <MaskedInput mask={'99'} className={'input'} placeholder={'01'}/>
-            <MaskedInput mask={'A'} className={'input'}/>
-            <MaskedInput mask={'999'} className={'input'}/>
-            <MaskedInput mask={'AA'} className={'input'}/>
+            <MaskedInput mask={'99'} className={'input first'} placeholder={'01'}/>
+            <MaskedInput mask={'a'} className={'input second'} placeholder={'A'}/>
+            <MaskedInput mask={'999'} className={'input third'} placeholder={'777'}/>
+            <MaskedInput mask={'aa'} className={'input fourth'} placeholder={'AA'}/>
         </Styled>
     );
 };

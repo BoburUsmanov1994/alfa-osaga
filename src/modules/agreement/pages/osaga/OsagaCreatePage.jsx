@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from "styled-components";
-import OsgorCreateContainer from "../../containers/osgor/OsgorCreateContainer";
+import OsagaCreateContainer from "../../containers/osaga/OsagaCreateContainer";
 
 const Styled = styled.div`
   .form-group {
@@ -8,12 +8,12 @@ const Styled = styled.div`
   }
 
 `;
-const OsgorCreatePage = ({...rest}) => {
+const OsagaCreatePage = ({...rest}) => {
     return (
         <Styled {...rest}>
-            <OsgorCreateContainer/>
+            <OsagaCreateContainer/>
         </Styled>
     );
 };
 
-export default OsgorCreatePage;
+export default OsagaCreatePage;

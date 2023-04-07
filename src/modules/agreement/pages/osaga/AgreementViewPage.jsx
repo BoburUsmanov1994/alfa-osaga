@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from "styled-components";
-import AgreementViewContainer from "../../containers/osgor/AgreementViewContainer";
+import AgreementViewContainer from "../../containers/osaga/AgreementViewContainer";
 import {useParams} from "react-router-dom";
 
 const Styled = styled.div`
