@@ -7,11 +7,8 @@ import {URLS} from "../../../../constants/url";
 import Field from "../../../../containers/form/field";
 import {useTranslation} from "react-i18next";
 
-const ProductsContainer = ({...rest}) => {
+const ListContainer = ({...rest}) => {
     const {t} = useTranslation()
-    const resetProduct = useSettingsStore(state => get(state, 'resetProduct', () => {
-    }))
-    const resetRiskList = useSettingsStore(state => get(state, 'resetRiskList', []))
     const setBreadcrumbs = useStore(state => get(state, 'setBreadcrumbs', () => {
     }))
     const breadcrumbs = useMemo(() => [
@@ -29,8 +26,6 @@ const ProductsContainer = ({...rest}) => {
 
     useEffect(() => {
         setBreadcrumbs(breadcrumbs)
-        resetProduct()
-        resetRiskList()
     }, [])
 
     const ModalBody = ({data, rowId = null}) => <>
@@ -51,13 +46,13 @@ const ProductsContainer = ({...rest}) => {
                         id: 3,
                         key: 'typeofpolice',
                         title: 'Тип страховщика',
-                        isArray:true
+                        isArray: true
                     },
                     {
                         id: 4,
                         key: 'typeofpayment',
                         title: 'Тип оплаты',
-                        isArray:true
+                        isArray: true
                     },
                     {
                         id: 5,
@@ -73,16 +68,16 @@ const ProductsContainer = ({...rest}) => {
                         id: 7,
                         key: 'fixedpremium',
                         title: 'Страховая сумма',
-                        hasNumberFormat:true
+                        hasNumberFormat: true
                     },
                 ]}
-                keyId={KEYS.products}
-                url={URLS.products}
+                keyId={KEYS.list}
+                url={URLS.list}
                 title={t('Все продукты')}
                 responseDataKey={'data'}
-                viewUrl={'/products/view'}
-                createUrl={'/products/create'}
-                updateUrl={'/products/update'}
+                viewUrl={'/osaga/view'}
+                createUrl={'/osaga/create'}
+                updateUrl={'/osaga/update'}
                 isHideColumn
 
             />
@@ -90,4 +85,4 @@ const ProductsContainer = ({...rest}) => {
     );
 };
 
-export default ProductsContainer;
+export default ListContainer;

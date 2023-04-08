@@ -8,7 +8,6 @@ import IsGuest from "../services/auth/IsGuest";
 import NotFoundPage from "../modules/auth/pages/NotFoundPage";
 import {OverlayLoader} from "../components/loader";
 import LogOutPage from "../modules/auth/pages/LogOutPage";
-//lazy load
 const OsagaAgreementsPage = lazy(() => import("../modules/agreement/pages/osaga/AgreementsPage"));
 const OsagaAgreementCreatePage = lazy(() => import("../modules/agreement/pages/osaga/OsagaCreatePage"));
 
@@ -22,6 +21,7 @@ const Router = ({...rest}) => {
                             <Route path={"osaga"}>
                                 <Route index  element={<OsagaAgreementsPage/>}/>
                                 <Route path={"create"} element={<OsagaAgreementCreatePage/>}/>
+                                <Route path={"list"} element={<OsagaAgreementsPage/>}/>
                             </Route>
                             <Route path="/auth/logout" element={<LogOutPage/>}/>
                             <Route path={"auth/*"} element={<Navigate to={'/osaga/create'} replace/>}/>

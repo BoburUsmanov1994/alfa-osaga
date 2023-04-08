@@ -81,7 +81,7 @@ const GridView = ({
     const [rowId, setRowId] = useState(null)
     const [page, setPage] = useState(1)
     const [columns, setColumns] = useState([])
-    const {data, isError, isLoading, isFetching} = usePaginateQuery({key: keyId, url, page})
+    const {data=[], isError, isLoading, isFetching} = usePaginateQuery({key: keyId, url})
     const {mutate: createRequest, isLoading: postLoading} = usePostQuery({listKeyId: keyId})
     const {mutate: updateRequest, isLoading: putLoading} = usePutQuery({listKeyId: keyId})
     const {mutate: deleteRequest, isLoading: deleteLoading} = useDeleteQuery({listKeyId: keyId})
