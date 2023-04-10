@@ -1,15 +1,67 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import styled from "styled-components";
-import MaskedInput from "react-input-mask";
+import uzImg from "../../assets/images/uz.png"
+import {useForm, Controller} from "react-hook-form";
+import InputMask from "react-input-mask";
+import {get, isEmpty, includes} from "lodash";
 
 const Styled = styled.div`
   display: flex;
   border: 2px solid #B7B7B7;
   border-radius: 5px;
+  position: relative;
+  overflow: hidden;
+  align-items: center;
 
-  
+
+  .uz {
+    display: flex;
+    flex-direction: column;
+    margin-left: 20px;
+    justify-content: center;
+    align-items: center;
+
+    img {
+      margin-bottom: 3px;
+    }
+
+    span {
+      color: #2F8BB2;
+      font-size: 18px;
+      font-weight: 600;
+    }
+  }
+
+  &:before {
+    position: absolute;
+    content: "";
+    top: 50%;
+    left: -4px;
+    width: 8px;
+    height: 8px;
+    background: #636363;
+    -webkit-border-radius: 50%;
+    -moz-border-radius: 50%;
+    border-radius: 50%;
+    transform: translateY(-50%);
+  }
+
+  &:after {
+    position: absolute;
+    content: "";
+    top: 50%;
+    right: -4px;
+    width: 8px;
+    height: 8px;
+    background: #636363;
+    -webkit-border-radius: 50%;
+    -moz-border-radius: 50%;
+    border-radius: 50%;
+    transform: translateY(-50%);
+  }
 
   .input {
+    text-transform: uppercase;
     padding: 18px 18px;
     color: #000;
     font-size: 48px;
@@ -22,18 +74,22 @@ const Styled = styled.div`
     text-align: center;
 
     &.first {
-      width: 100px;
+      width: 90px;
       border-right: 2px solid #B7B7B7;
     }
+
     &.second {
-      width: 100px;
+      width: 90px;
     }
+
     &.third {
-      width: 150px;
-    }
-    &.fourth {
       width: 130px;
     }
+
+    &.fourth {
+      width: 110px;
+    }
+
     &::placeholder {
       color: #B0B0B0;
     }
@@ -47,13 +103,83 @@ const Styled = styled.div`
     }
   }
 `;
-const Index = ({...rest}) => {
+const Index = ({
+                   getGovNumber = () => {
+                   }, ...rest
+               }) => {
+    const {register, handleSubmit, watch, control, formState: {errors}} = useForm();
+    const [value, setValue] = useState('')
+    useEffect(() => {
+        setValue(`${watch("govNumber[0]")}${watch("govNumber[1]")}${watch("govNumber[2]")}${watch("govNumber[3]")}`)
+    }, [watch("govNumber[0]"), watch("govNumber[1]"), watch("govNumber[2]"), watch("govNumber[3]")])
+    useEffect(() => {
+        if (!includes(value, 'undefined')) {
+            getGovNumber(value)
+        }
+    }, [value])
     return (
         <Styled {...rest}>
-            <MaskedInput mask={'99'} className={'input first'} placeholder={'01'}/>
-            <MaskedInput mask={'a'} className={'input second'} placeholder={'A'}/>
-            <MaskedInput mask={'999'} className={'input third'} placeholder={'777'}/>
-            <MaskedInput mask={'aa'} className={'input fourth'} placeholder={'AA'}/>
+            <Controller
+                as={InputMask}
+                control={control}
+                name={'govNumber[0]'}
+                render={({field}) => (
+                    <InputMask
+                        {...field}
+                        className={`input first`}
+                        placeholder={'01'}
+                        mask={'99'}
+                        maskChar={'_'}
+                    />
+                )}
+            />
+            <Controller
+                as={InputMask}
+                control={control}
+                name={'govNumber[1]'}
+                render={({field}) => (
+                    <InputMask
+                        {...field}
+                        className={`input second`}
+                        placeholder={'A'}
+                        mask={'a'}
+                        maskChar={'_'}
+                    />
+                )}
+            />
+            <Controller
+                as={InputMask}
+                control={control}
+                name={'govNumber[2]'}
+                render={({field}) => (
+                    <InputMask
+                        {...field}
+                        className={`input third`}
+                        placeholder={'777'}
+                        mask={'999'}
+                        maskChar={'_'}
+                    />
+                )}
+            />
+            <Controller
+                as={InputMask}
+                control={control}
+                name={'govNumber[3]'}
+                render={({field}) => (
+                    <InputMask
+                        {...field}
+                        className={`input fourth`}
+                        placeholder={'AA'}
+                        mask={'aa'}
+                        maskChar={'_'}
+                    />
+                )}
+            />
+
+            <div className=" uz">
+                <img src={uzImg} alt="uz"/>
+                <span>UZ</span>
+            </div>
         </Styled>
     );
 };

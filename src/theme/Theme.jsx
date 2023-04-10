@@ -78,6 +78,9 @@ const GlobalStyles = createGlobalStyle`
   .mr-16{
     margin-right: 16px !important;
   }
+  .mr-5{
+    margin-right: 5px !important;
+  }
 
   .mt-32{
     margin-top: 32px !important;
@@ -87,6 +90,9 @@ const GlobalStyles = createGlobalStyle`
   }
   .mt-15{
     margin-top: 15px !important;
+  }
+  .mt-30{
+    margin-top: 30px !important;
   }
   .mb-25{
     margin-bottom: 25px !important;

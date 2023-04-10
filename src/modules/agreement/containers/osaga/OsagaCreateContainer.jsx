@@ -1,6 +1,6 @@
 import React, {useEffect, useMemo, useState} from 'react';
-import {useSettingsStore, useStore} from "../../../../store";
-import {find, get, head, isEqual, isNil, round} from "lodash";
+import {useStore} from "../../../../store";
+import {find, get, isEqual, isNil, round} from "lodash";
 import Panel from "../../../../components/panel";
 import Search from "../../../../components/search";
 import {Col, Row} from "react-grid-system";
@@ -18,6 +18,11 @@ import {OverlayLoader} from "../../../../components/loader";
 import qrcodeImg from "../../../../assets/images/qrcode.png"
 import dayjs from "dayjs";
 import CarNumber from "../../../../components/car-number";
+import {toast} from "react-toastify";
+import Checkbox from 'rc-checkbox';
+import Modal from "../../../../components/modal";
+import Table from "../../../../components/table";
+import {Trash2} from "react-feather";
 
 const getEndDateByInsuranceTerm = (term, startDate) => {
     if (!isNil(term)) {
@@ -26,10 +31,14 @@ const getEndDateByInsuranceTerm = (term, startDate) => {
     return dayjs()
 }
 
-const OsagaCreateContainer = ({...rest}) => {
-    const [person, setPerson] = useState(null)
-    const [organization, setOrganization] = useState(null)
-    const [insurant, setInsurant] = useState('person')
+const OsagaCreateContainer = () => {
+    const [owner, setOwner] = useState('person')
+    const [ownerPerson, setOwnerPerson] = useState(null)
+    const [ownerOrganization, setOwnerOrganization] = useState(null)
+    const [applicant, setApplicant] = useState('person')
+    const [applicantPerson, setApplicantPerson] = useState(null)
+    const [applicantOrganization, setApplicantOrganization] = useState(null)
+    const [vehicle, setVehicle] = useState(null)
     const [passportSeries, setPassportSeries] = useState(null)
     const [passportNumber, setPassportNumber] = useState(null)
     const [birthDate, setBirthDate] = useState(null)
@@ -37,12 +46,26 @@ const OsagaCreateContainer = ({...rest}) => {
     const [regionId, setRegionId] = useState(null)
     const [insuranceTerm, setInsuranceTerm] = useState(null)
     const [policeStartDate, setPoliceStartDate] = useState(dayjs())
-    const [oked, setOked] = useState(null)
-    const [fotSum, setFotSum] = useState(0)
-    const [risk, setRisk] = useState(null)
     const [insurancePremium, setInsurancePremium] = useState(0)
     const [rpmPercent, setRpmPercent] = useState(0)
     const [rewardPercent, setRewardPercent] = useState(0)
+    const [govNumber, setGovNumber] = useState(null)
+    const [techPassportSeria, setTechPassportSeria] = useState(null)
+    const [techPassportNumber, setTechPassportNumber] = useState(null)
+    const [vehicleType, setVehicleType] = useState(null)
+    const [discount, setDiscount] = useState(null)
+    const [driverType, setDriverType] = useState(1)
+    const [termCategories, setTermCategories] = useState(null)
+    const [accident, setAccident] = useState(null)
+    const [applicantIsOwner, setApplicantIsOwner] = useState(false)
+    const [cost, setCost] = useState(null)
+    const [visible, setVisible] = useState(false)
+    const [driverPassportSeries, setDriverPassportSeries] = useState(null)
+    const [driverPassportNumber, setDriverPassportNumber] = useState(null)
+    const [driverInps, setDriverInps] = useState(null)
+    const [driver, setDriver] = useState(null)
+    const [drivers, setDrivers] = useState([])
+
     const setBreadcrumbs = useStore(state => get(state, 'setBreadcrumbs', () => {
     }))
     const breadcrumbs = useMemo(() => [{
@@ -56,8 +79,6 @@ const OsagaCreateContainer = ({...rest}) => {
         setBreadcrumbs(breadcrumbs)
     }, [])
 
-    const {data: filials, isLoading: isLoadingFilials} = useGetAllQuery({key: KEYS.agencies, url: URLS.agencies})
-    const filialList = getSelectOptionsListFromData(get(filials, `data.result`, []), 'id', 'name')
 
     const {data: insuranceTerms, isLoading: isLoadingInsuranceTerms} = useGetAllQuery({
         key: KEYS.insuranceTerms, url: URLS.insuranceTerms
@@ -80,11 +101,6 @@ const OsagaCreateContainer = ({...rest}) => {
     const discountList = getSelectOptionsListFromData(get(discounts, `data.result`, []), 'id', 'name')
 
 
-    const {data: country, isLoading: isLoadingCountry} = useGetAllQuery({
-        key: KEYS.countries, url: URLS.countries
-    })
-    const countryList = getSelectOptionsListFromData(get(country, `data.result`, []), 'id', 'name')
-
     const {data: region, isLoading: isLoadingRegion} = useGetAllQuery({
         key: KEYS.regions, url: URLS.regions
     })
@@ -100,15 +116,22 @@ const OsagaCreateContainer = ({...rest}) => {
     })
     const residentTypeList = getSelectOptionsListFromData(get(residentTypes, `data.result`, []), 'id', 'name')
 
-    const {data: okeds} = useGetAllQuery({
-        key: KEYS.okeds, url: URLS.okeds
-    })
-    const okedList = getSelectOptionsListFromData(get(okeds, `data.result`, []), 'id', 'name')
 
-    const {data: ownershipForms} = useGetAllQuery({
-        key: KEYS.ownershipForms, url: URLS.ownershipForms
+    const {data: vehicleTypes} = useGetAllQuery({
+        key: KEYS.vehicleTypes, url: URLS.vehicleTypes
     })
-    const ownershipFormList = getSelectOptionsListFromData(get(ownershipForms, `data.result`, []), 'id', 'name')
+    const vehicleTypeList = getSelectOptionsListFromData(get(vehicleTypes, `data.result`, []), 'id', 'name')
+
+    const {data: driverTypes} = useGetAllQuery({
+        key: KEYS.driverTypes, url: URLS.driverTypes
+    })
+    const driverTypeList = getSelectOptionsListFromData(get(driverTypes, `data.result`, []), 'id', 'name')
+
+    const {data: relatives} = useGetAllQuery({
+        key: KEYS.relatives, url: URLS.relatives
+    })
+    const relativeList = getSelectOptionsListFromData(get(relatives, `data.result`, []), 'id', 'name')
+
 
     const {data: district} = useGetAllQuery({
         key: [KEYS.districts, regionId],
@@ -118,24 +141,10 @@ const OsagaCreateContainer = ({...rest}) => {
                 region: regionId
             }
         },
-        enabled: !!(regionId || get(person, 'regionId'))
+        enabled: !!(regionId || get(ownerPerson, 'regionId'))
     })
     const districtList = getSelectOptionsListFromData(get(district, `data.result`, []), 'id', 'name')
 
-    const {data: activity} = useGetAllQuery({
-        key: [KEYS.activityAndRisk, oked],
-        url: URLS.activityAndRisk,
-        params: {
-            params: {
-                oked
-            }
-        },
-        enabled: !!(oked)
-    })
-    const activityList = getSelectOptionsListFromData([{
-        oked: get(activity, `data.result.oked`),
-        name: get(activity, `data.result.name`)
-    }], 'oked', 'name')
 
     const {
         mutate: getPersonalInfoRequest, isLoading: isLoadingPersonalInfo
@@ -146,10 +155,21 @@ const OsagaCreateContainer = ({...rest}) => {
     } = usePostQuery({listKeyId: KEYS.organizationInfoProvider})
 
     const {
-        mutate: calculatePremiumRequest
-    } = usePostQuery({listKeyId: KEYS.osgorCalculate})
+        mutate: getVehicleInfoRequest, isLoading: isLoadingVehicleInfo
+    } = usePostQuery({listKeyId: KEYS.vehicleInfo})
 
-    const getInfo = () => {
+    const {
+        mutate: calculatePremiumRequest
+    } = usePostQuery({listKeyId: KEYS.calculator, hideSuccessToast: false})
+
+    const {
+        mutate: getDriverInfoRequest, isLoading: isLoadingDriverInfo
+    } = usePostQuery({listKeyId: KEYS.driverInfo})
+    const {
+        mutate: createRequest, isLoading: isLoadingPost
+    } = usePostQuery({listKeyId: KEYS.create})
+
+    const getInfo = (type = 'owner') => {
         getPersonalInfoRequest({
                 url: URLS.personalInfoProvider, attributes: {
                     birthDate: dayjs(birthDate).format('YYYY-MM-DD'), passportSeries, passportNumber
@@ -157,12 +177,17 @@ const OsagaCreateContainer = ({...rest}) => {
             },
             {
                 onSuccess: ({data}) => {
-                    setPerson(get(data, 'result'))
+                    if (type == 'owner') {
+                        setOwnerPerson(get(data, 'result'));
+                    }
+                    if (type == 'applicant') {
+                        setApplicantPerson(get(data, 'result'));
+                    }
                 }
             }
         )
     }
-    const getOrgInfo = () => {
+    const getOrgInfo = (type = 'owner') => {
         getOrganizationInfoRequest({
                 url: URLS.organizationInfoProvider, attributes: {
                     inn
@@ -170,62 +195,177 @@ const OsagaCreateContainer = ({...rest}) => {
             },
             {
                 onSuccess: ({data}) => {
-                    setOrganization(get(data, 'result'))
+                    if (type == 'owner') {
+                        setOwnerOrganization(get(data, 'result'))
+                    }
+                    if (type == 'applicant') {
+                        setApplicantOrganization(get(data, 'result'))
+                    }
                 }
             }
         )
     }
+    const getVehicleInfo = () => {
+        if (govNumber && techPassportNumber && techPassportSeria) {
+            getVehicleInfoRequest({
+                    url: URLS.vehicleInfo, attributes: {
+                        govNumber,
+                        techPassportNumber,
+                        techPassportSeria
+                    }
+                },
+                {
+                    onSuccess: ({data}) => {
+                        setVehicle(get(data, 'result'))
+                    }
+                }
+            )
+        } else {
+            toast.warn('Please fill all fields')
+        }
+    }
+    const getDriverInfo = () => {
+        if (driverInps && driverPassportNumber && driverPassportSeries) {
+            getDriverInfoRequest({
+                    url: URLS.driverInfo, attributes: {
+                        pinfl: driverInps,
+                        passportSeries: driverPassportSeries,
+                        passportNumber: driverPassportNumber
+                    }
+                },
+                {
+                    onSuccess: ({data}) => {
+                        setDriver(get(data, 'result'))
+                    }
+                }
+            )
+        } else {
+            toast.warn('Please fill all fields')
+        }
+    }
     const calculatePremium = () => {
         calculatePremiumRequest({
-                url: URLS.osgorCalculate, attributes: {
-                    risk,
-                    insuranceSum: fotSum
+                url: URLS.calculator, attributes: {
+                    vehicleType,
+                    region: regionId,
+                    discount,
+                    driverType,
+                    terms: insuranceTerm,
+                    termCategories,
+                    accident
                 }
             },
             {
                 onSuccess: ({data}) => {
-                    setInsurancePremium(get(data, 'result.insurancePremium'))
+                    setInsurancePremium(get(data, 'result.amount'))
+                    setCost(get(data, 'result.cost'))
                 }
             }
         )
     }
+
+    const addDriver = ({data}) => {
+        if (get(data, 'driver.fullName.firstname')) {
+            setDrivers(prev => [...prev, get(data, 'driver')])
+            setVisible(false);
+        }
+    }
+    const removeDriver = (index) => {
+        setDrivers(drivers.filter((d, i) => i != index))
+    }
     const getFieldData = (name, value) => {
-        if (isEqual(name, 'insurant.person.regionId')) {
+        if (isEqual(name, 'owner.person.regionId')) {
             setRegionId(value)
         }
-        if (isEqual(name, 'policies[0].insuranceTermId')) {
+        if (isEqual(name, 'terms')) {
             setInsuranceTerm(value)
         }
-        if (isEqual(name, 'insurant.organization.oked')) {
-            setOked(value)
-        }
-        if (isEqual(name, 'risk')) {
-            setRisk(value)
-        }
+
         if (isEqual(name, 'rpmPercent')) {
             setRpmPercent(value)
         }
         if (isEqual(name, 'rewardPercent')) {
             setRewardPercent(value)
         }
-        if (isEqual(name, 'insurant.person.oked')) {
-            if (value?.length >= 4) {
-                setOked(value)
-            }
+
+        if (isEqual(name, 'vehicle.techPassport.number')) {
+            setTechPassportNumber(value)
         }
+        if (isEqual(name, 'vehicle.techPassport.seria')) {
+            setTechPassportSeria(value)
+        }
+        if (isEqual(name, 'vehicle.typeId')) {
+            setVehicleType(value)
+        }
+        if (isEqual(name, 'discount')) {
+            setDiscount(value)
+        }
+        if (isEqual(name, 'termCategories')) {
+            setTermCategories(value)
+        }
+        if (isEqual(name, 'accident')) {
+            setAccident(value)
+        }
+        if (isEqual(name, 'vehicle.regionId')) {
+            setRegionId(value)
+        }
+
     }
+
+    const create = ({data}) => {
+        const {
+            accident,
+            agencyId,
+            discount,
+            birthDate,
+            number,
+            passportNumber,
+            passportSeries,
+            policies,
+            rewardPercent,
+            rewardSum,
+            rpmPercent,
+            rpmSum,
+            seria,
+            termCategories,
+            terms,
+            details,
+            vehicle,
+            ...rest
+        } = data
+        const {regionId, ...vehicleRestData} = vehicle;
+        createRequest({
+                url: URLS.create, attributes: {
+                    cost,
+                    details: {...details, driverNumberRestriction: true, specialNote: '', insuredActivityType: ''},
+                    vehicle: {...vehicleRestData, govNumber},
+                    ...rest
+                }
+            },
+            {
+                onSuccess: ({data}) => {
+                    debugger
+                }
+            }
+        )
+    }
+
+
     useEffect(() => {
-        if (risk && fotSum) {
+        if (accident && insuranceTerm && termCategories && driverType && vehicleType) {
             calculatePremium()
         }
-    }, [risk, fotSum])
-    if (isLoadingFilials || isLoadingAccidentType || isLoadingTermCategory || isLoadingCountry || isLoadingRegion) {
+    }, [accident, insuranceTerm, termCategories, driverType, vehicleType])
+
+
+    if (isLoadingAccidentType || isLoadingTermCategory || isLoadingRegion || isLoadingInsuranceTerms || isLoadingDiscount) {
         return <OverlayLoader/>
     }
 
 
     return (<>
-        {(isLoadingPersonalInfo || isLoadingOrganizationInfo) && <OverlayLoader/>}
+        {(isLoadingPersonalInfo || isLoadingOrganizationInfo || isLoadingVehicleInfo || isLoadingPost) &&
+        <OverlayLoader/>}
         <Panel>
             <Row>
                 <Col xs={12}>
@@ -241,10 +381,8 @@ const OsagaCreateContainer = ({...rest}) => {
             </Row>
             <Row>
                 <Col xs={12}>
-                    <Form getValueFromField={(value, name) => getFieldData(name, value)}
-                          footer={<Flex className={'mt-32'}><Button className={'mr-16'}>Сохранить</Button><Button
-                              danger className={'mr-16'}>Удалить</Button><Button gray className={'mr-16'}>Подтвердить
-                              оплату</Button><Button gray className={'mr-16'}>Отправить в Фонд</Button></Flex>}>
+                    <Form formRequest={create} getValueFromField={(value, name) => getFieldData(name, value)}
+                          footer={<Flex className={'mt-32'}><Button className={'mr-16'}>Сохранить</Button></Flex>}>
                         <Row gutterWidth={60} className={'mt-32'}>
                             <Col xs={4} style={{borderRight: '1px solid #DFDFDF'}}>
                                 <Row align={'center'} className={'mb-25'}>
@@ -331,8 +469,9 @@ const OsagaCreateContainer = ({...rest}) => {
                                     <Col xs={5}>Дача окончания покрытия: </Col>
                                     <Col xs={7}><Field
                                         defaultValue={getEndDateByInsuranceTerm(find(get(insuranceTerms, `data.result`, []), (_insuranceTerm) => get(_insuranceTerm, 'id') == insuranceTerm), policeStartDate)}
-                                        disabled={!isEqual(insuranceTerm, 6)}
-                                        property={{hideLabel: true}} type={'datepicker'}
+                                        disabled
+                                        property={{hideLabel: true}}
+                                        type={'datepicker'}
                                         name={'details.endDate'}/></Col>
                                 </Row>
                                 <Row align={'center'} className={'mb-25'}>
@@ -349,34 +488,100 @@ const OsagaCreateContainer = ({...rest}) => {
                                 </Row>
                             </Col>
                         </Row>
-                        <Row gutterWidth={60} className={'mt-15'}>
-                            <Col xs={12} className={'mb-15'}><Title>Транспортное средство</Title></Col>
-                            <Col xs={4}>
-                                <CarNumber />
+                        <Row gutterWidth={60} className={'mt-30'}>
+                            <Col xs={12} className={'mb-25'}><Title>Транспортное средство</Title></Col>
+                            <Col xs={4} style={{borderRight: '1px solid #DFDFDF'}}>
+                                <div className={'mb-15'}>Государственный номер</div>
+                                <div className={'mb-25'}><CarNumber getGovNumber={setGovNumber}/></div>
+                                <Row align={'center'} className={'mb-25'}>
+                                    <Col xs={5}>Серия тех.паспорта:</Col>
+                                    <Col xs={7}><Field defaultValue={techPassportSeria} property={{hideLabel: true}}
+                                                       type={'input'}
+                                                       name={'vehicle.techPassport.seria'}/></Col>
+                                </Row>
+                                <Row align={'center'} className={'mb-25'}>
+                                    <Col xs={5}>Номер тех.паспорта:</Col>
+                                    <Col xs={7}><Field defaultValue={techPassportNumber} property={{hideLabel: true}}
+                                                       type={'input'}
+                                                       name={'vehicle.techPassport.number'}/></Col>
+                                </Row>
+                                <Button type={'button'} onClick={getVehicleInfo} className={'w-100'}>Получить
+                                    данные</Button>
                             </Col>
                             <Col xs={8}>
                                 <Row>
-
+                                    <Col xs={4} className="mb-25">
+                                        <Field defaultValue={get(vehicle, 'regionId')} options={regionList}
+                                               params={{required: true}}
+                                               label={'Территория пользования'}
+                                               type={'select'}
+                                               name={'vehicle.regionId'}/>
+                                    </Col>
+                                    <Col xs={4} className="mb-25">
+                                        <Field defaultValue={get(vehicle, 'modelName')} params={{required: true}}
+                                               label={'Марка / модель'}
+                                               type={'input'}
+                                               name={'vehicle.modelCustomName'}/>
+                                    </Col>
+                                    <Col xs={4} className="mb-25">
+                                        <Field defaultValue={get(vehicle, 'vehicleTypeId')} options={vehicleTypeList}
+                                               params={{required: true}}
+                                               label={'Вид транспорта'}
+                                               type={'select'}
+                                               name={'vehicle.typeId'}/>
+                                    </Col>
+                                    <Col xs={4} className="mb-25">
+                                        <Field defaultValue={get(vehicle, 'issueYear')}
+                                               property={{mask: '9999', maskChar: '_'}} params={{required: true}}
+                                               label={'Год'}
+                                               type={'input-mask'}
+                                               name={'vehicle.issueYear'}/>
+                                    </Col>
+                                    <Col xs={4} className="mb-25">
+                                        <Field defaultValue={get(vehicle, 'bodyNumber')} params={{required: true}}
+                                               label={'Номер кузова (шасси)'}
+                                               type={'input'}
+                                               name={'vehicle.bodyNumber'}/>
+                                    </Col>
+                                    <Col xs={4} className="mb-25">
+                                        <Field defaultValue={get(vehicle, 'engineNumber')} params={{required: true}}
+                                               label={'Номер двигателя'}
+                                               type={'input'}
+                                               name={'vehicle.engineNumber'}/>
+                                    </Col>
+                                    <Col xs={4} className="mb-25">
+                                        <Field defaultValue={get(vehicle, 'fullWeight')} params={{required: true}}
+                                               label={'Объем'}
+                                               type={'input'}
+                                               name={'vehicle.fullWeight'}/>
+                                    </Col>
+                                    <Col xs={4} className="mb-25">
+                                        <Field defaultValue={get(vehicle, 'techPassportIssueDate')}
+                                               params={{required: true}}
+                                               label={'Дата выдачи тех.паспорта'}
+                                               type={'datepicker'}
+                                               name={'vehicle.techPassport.issueDate'}/>
+                                    </Col>
                                 </Row>
                             </Col>
                         </Row>
-                        <Row gutterWidth={60} className={'mt-15'}>
-                            <Col xs={12} className={'mb-15'}><Title>Страхователь</Title></Col>
+                        <Row gutterWidth={60} className={'mt-30'}>
+                            <Col xs={12} className={'mb-25'}><Title>Собственник </Title></Col>
                             <Col xs={12}>
                                 <Row>
                                     <Col xs={4}>
                                         <Flex>
-                                            <h4 className={'mr-16'}>Страхователь</h4>
-                                            <Button onClick={() => setInsurant('person')}
-                                                    gray={!isEqual(insurant, 'person')} className={'mr-16'}
+                                            <h4 className={'mr-16'}>Собственник </h4>
+                                            <Button onClick={() => setOwner('person')}
+                                                    gray={!isEqual(owner, 'person')} className={'mr-16'}
                                                     type={'button'}>Физ. лицо</Button>
-                                            <Button onClick={() => setInsurant('organization')}
-                                                    gray={!isEqual(insurant, 'organization')} type={'button'}>Юр.
+                                            <Button onClick={() => setOwner('organization')}
+                                                    gray={!isEqual(owner, 'organization')} type={'button'}>Юр.
                                                 лицо</Button>
                                         </Flex>
                                     </Col>
                                     <Col xs={8} className={'text-right'}>
-                                        {isEqual(insurant, 'person') && <Flex justify={'flex-end'}>
+                                        {isEqual(owner, 'person') && <Flex justify={'flex-end'}>
                                             <Field onChange={(e) => setPassportSeries(e.target.value)}
                                                    className={'mr-16'} style={{width: 75}}
                                                    property={{
@@ -399,10 +604,11 @@ const OsagaCreateContainer = ({...rest}) => {
                                                        onChange: (e) => setBirthDate(e)
                                                    }}
                                                    name={'birthDate'} type={'datepicker'}/>
-                                            <Button onClick={getInfo} className={'ml-15'} type={'button'}>Получить
+                                            <Button onClick={() => getInfo('owner')} className={'ml-15'}
+                                                    type={'button'}>Получить
                                                 данные</Button>
                                         </Flex>}
-                                        {isEqual(insurant, 'organization') && <Flex justify={'flex-end'}>
+                                        {isEqual(owner, 'organization') && <Flex justify={'flex-end'}>
                                             <Field onChange={(e) => setInn(e.target.value)} property={{
                                                 hideLabel: true,
                                                 mask: '999999999',
@@ -410,7 +616,8 @@ const OsagaCreateContainer = ({...rest}) => {
                                                 maskChar: '_'
                                             }} name={'inn'} type={'input-mask'}/>
 
-                                            <Button onClick={getOrgInfo} className={'ml-15'} type={'button'}>Получить
+                                            <Button onClick={() => getOrgInfo('owner')} className={'ml-15'}
+                                                    type={'button'}>Получить
                                                 данные</Button>
                                         </Flex>}
                                     </Col>
@@ -419,24 +626,25 @@ const OsagaCreateContainer = ({...rest}) => {
                             <Col xs={12}>
                                 <hr className={'mt-15 mb-15'}/>
                             </Col>
-                            {isEqual(insurant, 'person') && <>
+                            {isEqual(owner, 'person') && <>
                                 <Col xs={3} className={'mb-25'}>
-                                    <Field defaultValue={get(person, 'firstNameLatin')} label={'Firstname'}
+                                    <Field defaultValue={get(ownerPerson, 'firstNameLatin')} label={'Firstname'}
                                            type={'input'}
-                                           name={'insurant.person.fullName.firstname'}/>
+                                           name={'owner.person.fullName.firstname'}/>
                                 </Col>
                                 <Col xs={3} className={'mb-25'}>
-                                    <Field defaultValue={get(person, 'lastNameLatin')} label={'Lastname'} type={'input'}
-                                           name={'insurant.person.fullName.lastname'}/>
-                                </Col>
-                                <Col xs={3} className={'mb-25'}>
-                                    <Field defaultValue={get(person, 'middleNameLatin')} label={'Middlename'}
+                                    <Field defaultValue={get(ownerPerson, 'lastNameLatin')} label={'Lastname'}
                                            type={'input'}
-                                           name={'insurant.person.fullName.middlename'}/>
+                                           name={'owner.person.fullName.lastname'}/>
                                 </Col>
                                 <Col xs={3} className={'mb-25'}>
-                                    <Field defaultValue={get(person, 'pinfl')} label={'ПИНФЛ'} type={'input'}
-                                           name={'insurant.person.passportData.pinfl'}/>
+                                    <Field defaultValue={get(ownerPerson, 'middleNameLatin')} label={'Middlename'}
+                                           type={'input'}
+                                           name={'owner.person.fullName.middlename'}/>
+                                </Col>
+                                <Col xs={3} className={'mb-25'}>
+                                    <Field defaultValue={get(ownerPerson, 'pinfl')} label={'ПИНФЛ'} type={'input'}
+                                           name={'owner.person.passportData.pinfl'}/>
                                 </Col>
                                 <Col xs={3} className={'mb-25'}>
                                     <Field property={{
@@ -444,7 +652,7 @@ const OsagaCreateContainer = ({...rest}) => {
                                         placeholder: 'AA',
                                         maskChar: '_'
                                     }} defaultValue={passportSeries} label={'Passport seria'} type={'input-mask'}
-                                           name={'insurant.person.passportData.seria'}/>
+                                           name={'owner.person.passportData.seria'}/>
                                 </Col>
                                 <Col xs={3} className={'mb-25'}>
                                     <Field property={{
@@ -452,180 +660,393 @@ const OsagaCreateContainer = ({...rest}) => {
                                         placeholder: '1234567',
                                         maskChar: '_'
                                     }} defaultValue={passportNumber} label={'Passport number'} type={'input-mask'}
-                                           name={'insurant.person.passportData.number'}/>
+                                           name={'owner.person.passportData.number'}/>
                                 </Col>
                                 <Col xs={3} className={'mb-25'}>
                                     <Field
-                                        defaultValue={dayjs(get(person, 'birthDate')).toDate()}
+                                        defaultValue={dayjs(get(ownerPerson, 'birthDate')).toDate()}
                                         label={'Birth date'}
                                         type={'datepicker'}
-                                        name={'insurant.person.birthDate'}/>
+                                        name={'owner.person.birthDate'}/>
                                 </Col>
                                 <Col xs={3} className={'mb-25'}>
                                     <Field
-                                        defaultValue={get(person, 'gender')}
+                                        defaultValue={get(ownerPerson, 'gender')}
                                         options={genderList}
                                         label={'Gender'}
                                         type={'select'}
-                                        name={'insurant.person.gender'}/>
+                                        name={'owner.person.gender'}/>
                                 </Col>
                                 <Col xs={3} className={'mb-25'}>
                                     <Field
-                                        options={countryList}
-                                        defaultValue={get(person, 'birthCountry')}
+                                        defaultValue={get(ownerPerson, 'birthCountry')}
                                         label={'Country'}
-                                        type={'select'}
-                                        name={'insurant.person.countryId'}/>
+                                        type={'input'}
+                                        name={'owner.person.birthCountryCode'}/>
                                 </Col>
                                 <Col xs={3} className={'mb-25'}>
                                     <Field
                                         options={regionList}
-                                        defaultValue={get(person, 'regionId')}
+                                        defaultValue={get(ownerPerson, 'regionId')}
                                         label={'Region'}
                                         type={'select'}
-                                        name={'insurant.person.regionId'}/>
+                                        name={'owner.person.regionId'}/>
                                 </Col>
                                 <Col xs={3} className={'mb-25'}>
                                     <Field
                                         options={districtList}
-                                        defaultValue={get(person, 'districtId')}
+                                        defaultValue={get(ownerPerson, 'districtId')}
                                         label={'District'}
                                         type={'select'}
-                                        name={'insurant.person.districtId'}/>
+                                        name={'owner.person.districtId'}/>
                                 </Col>
                                 <Col xs={3} className={'mb-25'}>
                                     <Field
                                         options={residentTypeList}
-                                        defaultValue={get(person, 'residentType')}
+                                        defaultValue={get(ownerPerson, 'residentType')}
                                         label={'Resident type'}
                                         type={'select'}
-                                        name={'insurant.person.residentType'}/>
+                                        name={'owner.person.residentType'}/>
                                 </Col>
                                 <Col xs={3} className={'mb-25'}>
                                     <Field
-                                        defaultValue={get(person, 'address')}
+                                        defaultValue={get(ownerPerson, 'address')}
                                         label={'Address'}
                                         type={'input'}
-                                        name={'insurant.person.address'}/>
+                                        name={'owner.person.address'}/>
                                 </Col>
                                 <Col xs={3} className={'mb-25'}>
                                     <Field
-                                        defaultValue={get(person, 'phone')}
+                                        defaultValue={get(ownerPerson, 'phone')}
                                         label={'Phone'}
                                         type={'input'}
-                                        name={'insurant.person.phone'}/>
+                                        name={'owner.person.phone'}/>
                                 </Col>
                                 <Col xs={3} className={'mb-25'}>
                                     <Field
-                                        defaultValue={get(person, 'email')}
+                                        defaultValue={get(ownerPerson, 'email')}
                                         label={'Email'}
                                         type={'input'}
-                                        name={'insurant.person.email'}/>
-                                </Col>
-                                <Col xs={3} className={'mb-25'}>
-                                    <Field
-                                        label={'Oked'}
-                                        type={'input'}
-                                        name={'insurant.person.oked'}/>
+                                        name={'owner.person.email'}/>
                                 </Col>
                             </>}
-                            {isEqual(insurant, 'organization') && <>
+                            {isEqual(owner, 'organization') && <>
                                 <Col xs={3} className={'mb-25'}>
                                     <Field props={{required: true}} label={'INN'} defaultValue={inn} property={{
                                         mask: '999999999',
                                         placeholder: 'Inn',
                                         maskChar: '_'
-                                    }} name={'insurant.organization.inn'} type={'input-mask'}/>
+                                    }} name={'owner.organization.inn'} type={'input-mask'}/>
 
                                 </Col>
                                 <Col xs={3} className={'mb-25'}>
-                                    <Field props={{required: true}} defaultValue={get(organization, 'name')}
+                                    <Field props={{required: true}} defaultValue={get(ownerOrganization, 'name')}
                                            label={'Наименование'} type={'input'}
-                                           name={'insurant.organization.name'}/>
+                                           name={'owner.organization.name'}/>
                                 </Col>
                                 <Col xs={3} className={'mb-25'}>
                                     <Field label={'Руководитель'} type={'input'}
-                                           name={'insurant.organization.representativeName'}/>
+                                           name={'owner.organization.representativeName'}/>
                                 </Col>
                                 <Col xs={3} className={'mb-25'}>
                                     <Field label={'Должность'} type={'input'}
-                                           name={'insurant.organization.position'}/>
+                                           name={'owner.organization.position'}/>
                                 </Col>
                                 <Col xs={3} className={'mb-25'}>
-                                    <Field defaultValue={get(organization, 'phone')} props={{required: true}}
+                                    <Field defaultValue={get(ownerOrganization, 'phone')} props={{required: true}}
                                            label={'Телефон'} type={'input'}
-                                           name={'insurant.organization.phone'}/>
+                                           name={'owner.organization.phone'}/>
                                 </Col>
                                 <Col xs={3} className={'mb-25'}>
-                                    <Field defaultValue={get(organization, 'email')} label={'Email'} type={'input'}
-                                           name={'insurant.organization.email'}/>
-                                </Col>
-                                <Col xs={3} className={'mb-25'}>
-                                    <Field
-                                        options={okedList}
-                                        defaultValue={get(organization, 'oked')}
-                                        label={'ОКЭД'}
-                                        type={'select'}
-                                        name={'insurant.organization.oked'}/>
+                                    <Field defaultValue={get(ownerOrganization, 'email')} label={'Email'} type={'input'}
+                                           name={'owner.organization.email'}/>
                                 </Col>
                                 <Col xs={3} className={'mb-25'}>
                                     <Field label={'Расчетный счет'} type={'input'}
-                                           name={'insurant.organization.checkingAccount'}/>
+                                           name={'owner.organization.checkingAccount'}/>
                                 </Col>
                                 <Col xs={3}><Field label={'Область'} params={{required: true}} options={regionList}
                                                    type={'select'}
-                                                   name={'insurant.organization.regionId'}/></Col>
+                                                   name={'owner.organization.regionId'}/></Col>
                                 <Col xs={3}><Field label={'Форма собственности'} params={{required: true}}
-                                                   options={ownershipFormList}
+                                                   options={[]}
                                                    type={'select'}
-                                                   name={'insurant.organization.ownershipFormId'}/></Col>
+                                                   name={'owner.organization.ownershipFormId'}/></Col>
+                            </>}
+                            <Col xs={12} className={'mt-15'}><Checkbox checked={applicantIsOwner}
+                                                                       onChange={(e) => setApplicantIsOwner(e.target.checked)}
+                                                                       className={'mr-5'}/><strong>Собственник является
+                                Заявителем</strong></Col>
+                        </Row>
+
+                        <Row gutterWidth={60} className={'mt-30'}>
+                            <Col xs={12} className={'mb-25'}><Title>Заявитель </Title></Col>
+                            <Col xs={12}>
+                                <Row>
+                                    <Col xs={4}>
+                                        <Flex>
+                                            <h4 className={'mr-16'}>Заявитель </h4>
+                                            <Button onClick={() => !applicantIsOwner && setApplicant('person')}
+                                                    gray={!isEqual(applicantIsOwner ? owner : applicant, 'person')}
+                                                    className={'mr-16'}
+                                                    type={'button'}>Физ. лицо</Button>
+                                            <Button onClick={() => !applicantIsOwner && setApplicant('organization')}
+                                                    gray={!isEqual(applicantIsOwner ? owner : applicant, 'organization')}
+                                                    type={'button'}>Юр.
+                                                лицо</Button>
+                                        </Flex>
+                                    </Col>
+                                    <Col xs={8} className={'text-right'}>
+                                        {isEqual(applicantIsOwner ? owner : applicant, 'person') &&
+                                        <Flex justify={'flex-end'}>
+                                            <Field onChange={(e) => setPassportSeries(e.target.value)}
+                                                   className={'mr-16'} style={{width: 75}}
+                                                   property={{
+                                                       hideLabel: true, mask: 'aa', placeholder: 'AA', maskChar: '_'
+                                                   }}
+                                                   name={'passportSeries'}
+                                                   type={'input-mask'}
+                                            />
+                                            <Field onChange={(e) => setPassportNumber(e.target.value)} property={{
+                                                hideLabel: true,
+                                                mask: '9999999',
+                                                placeholder: '1234567',
+                                                maskChar: '_'
+                                            }} name={'passportNumber'} type={'input-mask'}/>
+
+                                            <Field className={'ml-15'}
+                                                   property={{
+                                                       hideLabel: true,
+                                                       placeholder: 'Дата рождения',
+                                                       onChange: (e) => setBirthDate(e)
+                                                   }}
+                                                   name={'birthDate'} type={'datepicker'}/>
+                                            <Button onClick={() => getInfo('applicant')} className={'ml-15'}
+                                                    type={'button'}>Получить
+                                                данные</Button>
+                                        </Flex>}
+                                        {isEqual(applicantIsOwner ? owner : applicant, 'organization') &&
+                                        <Flex justify={'flex-end'}>
+                                            <Field onChange={(e) => setInn(e.target.value)} property={{
+                                                hideLabel: true,
+                                                mask: '999999999',
+                                                placeholder: 'Inn',
+                                                maskChar: '_'
+                                            }} name={'inn'} type={'input-mask'}/>
+
+                                            <Button onClick={() => getOrgInfo('applicant')} className={'ml-15'}
+                                                    type={'button'}>Получить
+                                                данные</Button>
+                                        </Flex>}
+                                    </Col>
+                                </Row>
+                            </Col>
+                            <Col xs={12}>
+                                <hr className={'mt-15 mb-15'}/>
+                            </Col>
+                            {isEqual(applicantIsOwner ? owner : applicant, 'person') && <>
+                                <Col xs={3} className={'mb-25'}>
+                                    <Field
+                                        defaultValue={get(applicantIsOwner ? ownerPerson : applicantPerson, 'firstNameLatin')}
+                                        label={'Firstname'}
+                                        type={'input'}
+                                        name={'applicant.person.fullName.firstname'}/>
+                                </Col>
+                                <Col xs={3} className={'mb-25'}>
+                                    <Field
+                                        defaultValue={get(applicantIsOwner ? ownerPerson : applicantPerson, 'lastNameLatin')}
+                                        label={'Lastname'}
+                                        type={'input'}
+                                        name={'applicant.person.fullName.lastname'}/>
+                                </Col>
+                                <Col xs={3} className={'mb-25'}>
+                                    <Field
+                                        defaultValue={get(applicantIsOwner ? ownerPerson : applicantPerson, 'middleNameLatin')}
+                                        label={'Middlename'}
+                                        type={'input'}
+                                        name={'applicant.person.fullName.middlename'}/>
+                                </Col>
+                                <Col xs={3} className={'mb-25'}>
+                                    <Field defaultValue={get(applicantIsOwner ? ownerPerson : applicantPerson, 'pinfl')}
+                                           label={'ПИНФЛ'} type={'input'}
+                                           name={'applicant.person.passportData.pinfl'}/>
+                                </Col>
+                                <Col xs={3} className={'mb-25'}>
+                                    <Field property={{
+                                        mask: 'aa',
+                                        placeholder: 'AA',
+                                        maskChar: '_'
+                                    }} defaultValue={passportSeries} label={'Passport seria'} type={'input-mask'}
+                                           name={'applicant.person.passportData.seria'}/>
+                                </Col>
+                                <Col xs={3} className={'mb-25'}>
+                                    <Field property={{
+                                        mask: '9999999',
+                                        placeholder: '1234567',
+                                        maskChar: '_'
+                                    }} defaultValue={passportNumber} label={'Passport number'} type={'input-mask'}
+                                           name={'applicant.person.passportData.number'}/>
+                                </Col>
+                                <Col xs={3} className={'mb-25'}>
+                                    <Field
+                                        defaultValue={dayjs(get(applicantIsOwner ? ownerPerson : applicantPerson, 'birthDate')).toDate()}
+                                        label={'Birth date'}
+                                        type={'datepicker'}
+                                        name={'applicant.person.birthDate'}/>
+                                </Col>
+                                <Col xs={3} className={'mb-25'}>
+                                    <Field
+                                        defaultValue={get(applicantIsOwner ? ownerPerson : applicantPerson, 'gender')}
+                                        options={genderList}
+                                        label={'Gender'}
+                                        type={'select'}
+                                        name={'applicant.person.gender'}/>
+                                </Col>
+                                <Col xs={3} className={'mb-25'}>
+                                    <Field
+                                        defaultValue={get(applicantIsOwner ? ownerPerson : applicantPerson, 'birthCountry')}
+                                        label={'Country'}
+                                        type={'input'}
+                                        name={'applicant.person.birthCountryCode'}/>
+                                </Col>
+                                <Col xs={3} className={'mb-25'}>
+                                    <Field
+                                        options={regionList}
+                                        defaultValue={get(applicantIsOwner ? ownerPerson : applicantPerson, 'regionId')}
+                                        label={'Region'}
+                                        type={'select'}
+                                        name={'applicant.person.regionId'}/>
+                                </Col>
+                                <Col xs={3} className={'mb-25'}>
+                                    <Field
+                                        options={districtList}
+                                        defaultValue={get(applicantIsOwner ? ownerPerson : applicantPerson, 'districtId')}
+                                        label={'District'}
+                                        type={'select'}
+                                        name={'applicant.person.districtId'}/>
+                                </Col>
+                                <Col xs={3} className={'mb-25'}>
+                                    <Field
+                                        options={residentTypeList}
+                                        defaultValue={get(applicantIsOwner ? ownerPerson : applicantPerson, 'residentType')}
+                                        label={'Resident type'}
+                                        type={'select'}
+                                        name={'applicant.person.residentType'}/>
+                                </Col>
+                                <Col xs={3} className={'mb-25'}>
+                                    <Field
+                                        defaultValue={get(applicantIsOwner ? ownerPerson : applicantPerson, 'address')}
+                                        label={'Address'}
+                                        type={'input'}
+                                        name={'applicant.person.address'}/>
+                                </Col>
+                                <Col xs={3} className={'mb-25'}>
+                                    <Field
+                                        defaultValue={get(applicantIsOwner ? ownerPerson : applicantPerson, 'phone')}
+                                        label={'Phone'}
+                                        type={'input'}
+                                        name={'applicant.person.phone'}/>
+                                </Col>
+                                <Col xs={3} className={'mb-25'}>
+                                    <Field
+                                        defaultValue={get(applicantIsOwner ? ownerPerson : applicantPerson, 'email')}
+                                        label={'Email'}
+                                        type={'input'}
+                                        name={'applicant.person.email'}/>
+                                </Col>
+                            </>}
+                            {isEqual(applicantIsOwner ? owner : applicant, 'organization') && <>
+                                <Col xs={3} className={'mb-25'}>
+                                    <Field props={{required: true}} label={'INN'} defaultValue={inn} property={{
+                                        mask: '999999999',
+                                        placeholder: 'Inn',
+                                        maskChar: '_'
+                                    }} name={'applicant.organization.inn'} type={'input-mask'}/>
+
+                                </Col>
+                                <Col xs={3} className={'mb-25'}>
+                                    <Field props={{required: true}}
+                                           defaultValue={get(applicantIsOwner ? ownerOrganization : applicantOrganization, 'name')}
+                                           label={'Наименование'} type={'input'}
+                                           name={'applicant.organization.name'}/>
+                                </Col>
+                                <Col xs={3} className={'mb-25'}>
+                                    <Field label={'Руководитель'} type={'input'}
+                                           name={'applicant.organization.representativeName'}/>
+                                </Col>
+                                <Col xs={3} className={'mb-25'}>
+                                    <Field label={'Должность'} type={'input'}
+                                           name={'applicant.organization.position'}/>
+                                </Col>
+                                <Col xs={3} className={'mb-25'}>
+                                    <Field
+                                        defaultValue={get(applicantIsOwner ? ownerOrganization : applicantOrganization, 'phone')}
+                                        props={{required: true}}
+                                        label={'Телефон'} type={'input'}
+                                        name={'applicant.organization.phone'}/>
+                                </Col>
+                                <Col xs={3} className={'mb-25'}>
+                                    <Field
+                                        defaultValue={get(applicantIsOwner ? ownerOrganization : applicantOrganization, 'email')}
+                                        label={'Email'} type={'input'}
+                                        name={'applicant.organization.email'}/>
+                                </Col>
+                                <Col xs={3} className={'mb-25'}>
+                                    <Field label={'Расчетный счет'} type={'input'}
+                                           name={'applicant.organization.checkingAccount'}/>
+                                </Col>
+                                <Col xs={3}><Field label={'Область'} params={{required: true}} options={regionList}
+                                                   type={'select'}
+                                                   name={'applicant.organization.regionId'}/></Col>
+                                <Col xs={3}><Field label={'Форма собственности'} params={{required: true}}
+                                                   options={[]}
+                                                   type={'select'}
+                                                   name={'applicant.organization.ownershipFormId'}/></Col>
                             </>}
                         </Row>
-                        <Row gutterWidth={60} className={'mt-15'}>
-                            <Col xs={12} className={'mb-15'}><Title>Вид деятельности</Title></Col>
-                            <Col xs={3} className={'mb-25'}>
-                                <Field
-                                    options={activityList}
-                                    label={'Вид деятельности (по правилам)'}
-                                    type={'select'}
-                                    name={'activityRisk'}/>
+
+                        <Row gutterWidth={60} className={'mt-30'}>
+                            <Col xs={12} className={'mb-25'}><Title>Водители / Родственники</Title></Col>
+                            <Col xs={12}>
+                                <Flex justify={'flex-end'}><Field label={'Количество водителей'} defaultValue={1}
+                                                                  options={driverTypeList} type={'radio-group'}
+                                                                  name={'driverType'}/><Button
+                                    onClick={() => setVisible(true)} className={'ml-15'}
+                                    type={'button'}>Добавить</Button></Flex>
                             </Col>
-                            <Col xs={3} className={'mb-25'}>
-                                <Field
-                                    options={getSelectOptionsListFromData(get(activity, 'data.result.risks', []), 'number', 'number')}
-                                    label={'Класс проф. риска'}
-                                    type={'select'}
-                                    name={'risk'}/>
-                            </Col>
-                            <Col xs={3} className={'mb-25'}>
-                                <Field
-                                    defaultValue={get(find(get(activity, 'data.result.risks', []), _risk => get(_risk, 'number') == risk), 'coeficient')}
-                                    property={{disabled: true}}
-                                    label={'Коэффициент страхового тарифа'}
-                                    type={'input'}
-                                    name={'comission'}/>
-                            </Col>
-                            <Col xs={3} className={'mb-25'}>
-                                <Field
-                                    label={'Расходы на погребение'}
-                                    type={'input'}
-                                    name={'funeralExpensesSum'}/>
-                            </Col>
-                            <Col xs={3} className={'mb-25'}>
-                                <Field
-                                    property={{onChange: (val) => setFotSum(val)}}
-                                    label={'Фонд оплаты труда'}
-                                    type={'number-format-input'}
-                                    name={'fot'}/>
+                            <Col xs={12}>
+                                <div className={'horizontal-scroll mt-15 '}>
+                                    <Table bordered hideThead={false}
+                                           thead={['Фамилия ', 'Имя', 'Отчество', 'Сария паспорта', 'Pinfl', 'Номер паспорта', 'Дата паспорта', 'Серия вод.удостоверения', 'Номер вод.удостоверения', 'Дата вод.удостоверения', 'Степень родства', 'Action']}>
+                                        {
+                                            drivers.map((item, index) => <tr>
+                                                <td>{get(item, 'driver.fullName.lastname')}</td>
+                                                <td>{get(item, 'driver.fullName.firstname')}</td>
+                                                <td>{get(item, 'driver.fullName.middlename')}</td>
+                                                <td>{get(item, 'driver.passportData.seria')}</td>
+                                                <td>{get(item, 'driver.passportData.number')}</td>
+                                                <td>{get(item, 'driver.passportData.pinfl')}</td>
+                                                <td>{get(item, 'driver.startDate')}</td>
+                                                <td>{get(item, 'driver.licenseSeria')}</td>
+                                                <td>{get(item, 'driver.licenseNumber')}</td>
+                                                <td>{get(item, 'driver.issueDate')}</td>
+                                                <td>{get(find(relativeList, (r) => get(r, 'value') == get(item, 'driver.relative')), 'label')}</td>
+                                                <td><Trash2 onClick={() => removeDriver(index)}
+                                                            className={'cursor-pointer'} color={'red'}/></td>
+                                            </tr>)
+                                        }
+                                    </Table>
+                                </div>
                             </Col>
                         </Row>
-                        <Row gutterWidth={60} className={'mt-15'}>
-                            <Col xs={12} className={'mb-15'}><Title>Агентсткое вознограждение и РПМ</Title></Col>
+
+                        <Row gutterWidth={60} className={'mt-30'}>
+                            <Col xs={12} className={'mb-25'}><Title>Агентсткое вознограждение и РПМ</Title></Col>
                             <Col xs={8}>
                                 <Row>
                                     <Col xs={12} className={'mb-25'}>
                                         <Field
-                                            options={filialList}
+                                            options={[]}
                                             label={'Агент'}
                                             type={'select'}
                                             name={'agencyId'}/>
@@ -665,6 +1086,88 @@ const OsagaCreateContainer = ({...rest}) => {
                     </Form>
                 </Col>
             </Row>
+            <Modal title={'Добавление водителя/родственника'} hide={() => setVisible(false)} visible={visible}>
+                {isLoadingDriverInfo && <OverlayLoader/>}
+                <Form
+                    formRequest={addDriver}
+                    footer={<Flex className={'mt-32'}><Button>Добавить</Button></Flex>}>
+                    <Row>
+                        <Col xs={12} className={' mt-15'}>
+                            <Flex>
+                                <Field onChange={(e) => setDriverPassportSeries(e.target.value)}
+                                       className={'mr-16'} style={{width: 75}}
+                                       property={{
+                                           hideLabel: true, mask: 'aa', placeholder: 'AA', maskChar: '_'
+                                       }}
+                                       name={'driver.passportData.seria'}
+                                       type={'input-mask'}
+                                />
+                                <Field className={'mr-16'} onChange={(e) => setDriverPassportNumber(e.target.value)}
+                                       property={{
+                                           hideLabel: true,
+                                           mask: '9999999',
+                                           placeholder: '1234567',
+                                           maskChar: '_'
+                                       }} name={'driver.passportData.number'} type={'input-mask'}/>
+
+                                <Field className={'mr-16'} onChange={(e) => setDriverInps(e.target.value)} property={{
+                                    hideLabel: true,
+                                    mask: '99999999999999',
+                                    placeholder: 'INPS',
+                                    maskChar: '_'
+                                }} name={'driver.passportData.pinfl'} type={'input-mask'}/>
+                                <Button type={'button'} onClick={() => getDriverInfo()} className={'ml-15'}
+                                        type={'button'}>Получить
+                                    данные</Button>
+                            </Flex></Col>
+                        <Col xs={4} className={'mt-15'}>
+                            <Field defaultValue={get(driver, 'DriverPersonInfo.lastNameLatin')} label={'Фамилия'}
+                                   type={'input'}
+                                   name={'driver.fullName.lastname'}/>
+                        </Col>
+                        <Col xs={4} className={'mt-15'}>
+                            <Field defaultValue={get(driver, 'DriverPersonInfo.firstNameLatin')} label={'Имя'}
+                                   type={'input'}
+                                   name={'driver.fullName.firstname'}/>
+                        </Col>
+                        <Col xs={4} className={'mt-15'}>
+                            <Field defaultValue={get(driver, 'DriverPersonInfo.middleNameLatin')} label={'Отчество'}
+                                   type={'input'}
+                                   name={'driver.fullName.middlename'}/>
+                        </Col>
+                        <Col xs={4} className={'mt-15'}>
+                            <Field defaultValue={get(driver, 'DriverPersonInfo.startDate')} label={'Дата паспорта'}
+                                   type={'datepicker'}
+                                   name={'driver.startDate'}/>
+                        </Col>
+                        <Col xs={4} className={'mt-15'}>
+                            <Field defaultValue={get(driver, 'DriverInfo.licenseSeria')}
+                                   label={'Серия вод.удостоверения'}
+                                   type={'input'}
+                                   name={'driver.licenseSeria'}/>
+                        </Col>
+                        <Col xs={4} className={'mt-15'}>
+                            <Field defaultValue={get(driver, 'DriverInfo.licenseNumber')}
+                                   label={'Номер вод.удостоверения'}
+                                   type={'input'}
+                                   name={'driver.licenseNumber'}/>
+                        </Col>
+                        <Col xs={4} className={'mt-15'}>
+                            <Field defaultValue={get(driver, 'DriverPersonInfo.issueDate')}
+                                   label={'Дата вод.удостоверения'}
+                                   type={'datepicker'}
+                                   name={'driver.issueDate'}/>
+                        </Col>
+                        <Col xs={4} className={'mt-15'}>
+                            <Field options={relativeList}
+                                   label={'Степень родства'}
+                                   property={{hideLabel: true}}
+                                   type={'select'}
+                                   name={'driver.relative'}/>
+                        </Col>
+                    </Row>
+                </Form>
+            </Modal>
         </Section>
     </>);
 };
