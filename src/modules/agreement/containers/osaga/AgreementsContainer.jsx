@@ -21,6 +21,7 @@ const ListContainer = ({...rest}) => {
             id: 2,
             title: 'Все продукты',
             path: '/products/all',
+
         }
     ], [])
 
