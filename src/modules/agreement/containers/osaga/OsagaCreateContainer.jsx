@@ -365,7 +365,7 @@ const OsagaCreateContainer = () => {
 
     return (<>
         {(isLoadingPersonalInfo || isLoadingOrganizationInfo || isLoadingVehicleInfo || isLoadingPost) &&
-        <OverlayLoader/>}
+            <OverlayLoader/>}
         <Panel>
             <Row>
                 <Col xs={12}>
@@ -400,14 +400,6 @@ const OsagaCreateContainer = () => {
                                     <Col xs={7}><Field params={{required: true}} property={{hideLabel: true}}
                                                        type={'input'}
                                                        name={'number'}/></Col>
-                                </Row>
-                                <Row align={'center'} className={'mb-25'}>
-                                    <Col xs={6} className={'text-center'}>
-                                        <img src={qrcodeImg} alt=""/>
-                                    </Col>
-                                    <Col xs={6}>
-                                        <Button type={'button'}>Проверить полис</Button>
-                                    </Col>
                                 </Row>
                                 <Row align={'center'} className={'mb-25'}>
                                     <Col xs={5}>Наличие страховых случаев:</Col>
@@ -461,6 +453,7 @@ const OsagaCreateContainer = () => {
                                 <Row align={'center'} className={'mb-25'}>
                                     <Col xs={5}>Дата начала покрытия: </Col>
                                     <Col xs={7}><Field
+                                        params={{required: true}}
                                         property={{hideLabel: true, onChange: (val) => setPoliceStartDate(val)}}
                                         type={'datepicker'}
                                         name={'details.startDate'}/></Col>
@@ -628,26 +621,26 @@ const OsagaCreateContainer = () => {
                             </Col>
                             {isEqual(owner, 'person') && <>
                                 <Col xs={3} className={'mb-25'}>
-                                    <Field defaultValue={get(ownerPerson, 'firstNameLatin')} label={'Firstname'}
+                                    <Field params={{required:true}} defaultValue={get(ownerPerson, 'firstNameLatin')} label={'Firstname'}
                                            type={'input'}
                                            name={'owner.person.fullName.firstname'}/>
                                 </Col>
                                 <Col xs={3} className={'mb-25'}>
-                                    <Field defaultValue={get(ownerPerson, 'lastNameLatin')} label={'Lastname'}
+                                    <Field params={{required:true}} defaultValue={get(ownerPerson, 'lastNameLatin')} label={'Lastname'}
                                            type={'input'}
                                            name={'owner.person.fullName.lastname'}/>
                                 </Col>
                                 <Col xs={3} className={'mb-25'}>
-                                    <Field defaultValue={get(ownerPerson, 'middleNameLatin')} label={'Middlename'}
+                                    <Field params={{required:true}} defaultValue={get(ownerPerson, 'middleNameLatin')} label={'Middlename'}
                                            type={'input'}
                                            name={'owner.person.fullName.middlename'}/>
                                 </Col>
                                 <Col xs={3} className={'mb-25'}>
-                                    <Field defaultValue={get(ownerPerson, 'pinfl')} label={'ПИНФЛ'} type={'input'}
+                                    <Field params={{required:true}} defaultValue={get(ownerPerson, 'pinfl')} label={'ПИНФЛ'} type={'input'}
                                            name={'owner.person.passportData.pinfl'}/>
                                 </Col>
                                 <Col xs={3} className={'mb-25'}>
-                                    <Field property={{
+                                    <Field params={{required:true}} property={{
                                         mask: 'aa',
                                         placeholder: 'AA',
                                         maskChar: '_'
@@ -655,7 +648,7 @@ const OsagaCreateContainer = () => {
                                            name={'owner.person.passportData.seria'}/>
                                 </Col>
                                 <Col xs={3} className={'mb-25'}>
-                                    <Field property={{
+                                    <Field params={{required:true}} property={{
                                         mask: '9999999',
                                         placeholder: '1234567',
                                         maskChar: '_'
@@ -663,7 +656,21 @@ const OsagaCreateContainer = () => {
                                            name={'owner.person.passportData.number'}/>
                                 </Col>
                                 <Col xs={3} className={'mb-25'}>
-                                    <Field
+                                    <Field params={{required:true}}
+                                           defaultValue={dayjs(get(ownerPerson, 'startDate')).toDate()}
+                                           label={'Issue date'}
+                                           type={'datepicker'}
+                                           name={'owner.person.issueDate'}/>
+                                </Col>
+                                <Col xs={3} className={'mb-25'}>
+                                    <Field params={{required:true}}
+                                           defaultValue={get(ownerPerson, 'issuedBy')}
+                                           label={'Issued by'}
+                                           type={'input'}
+                                           name={'owner.person.issuedBy'}/>
+                                </Col>
+                                <Col xs={3} className={'mb-25'}>
+                                    <Field params={{required:true}}
                                         defaultValue={dayjs(get(ownerPerson, 'birthDate')).toDate()}
                                         label={'Birth date'}
                                         type={'datepicker'}
@@ -686,6 +693,7 @@ const OsagaCreateContainer = () => {
                                 </Col>
                                 <Col xs={3} className={'mb-25'}>
                                     <Field
+                                        params={{required:true}}
                                         options={regionList}
                                         defaultValue={get(ownerPerson, 'regionId')}
                                         label={'Region'}
@@ -694,6 +702,7 @@ const OsagaCreateContainer = () => {
                                 </Col>
                                 <Col xs={3} className={'mb-25'}>
                                     <Field
+                                        params={{required:true}}
                                         options={districtList}
                                         defaultValue={get(ownerPerson, 'districtId')}
                                         label={'District'}
@@ -717,6 +726,7 @@ const OsagaCreateContainer = () => {
                                 </Col>
                                 <Col xs={3} className={'mb-25'}>
                                     <Field
+                                        params={{required:true}}
                                         defaultValue={get(ownerPerson, 'phone')}
                                         label={'Phone'}
                                         type={'input'}
@@ -798,46 +808,46 @@ const OsagaCreateContainer = () => {
                                     </Col>
                                     <Col xs={8} className={'text-right'}>
                                         {isEqual(applicantIsOwner ? owner : applicant, 'person') &&
-                                        <Flex justify={'flex-end'}>
-                                            <Field onChange={(e) => setPassportSeries(e.target.value)}
-                                                   className={'mr-16'} style={{width: 75}}
-                                                   property={{
-                                                       hideLabel: true, mask: 'aa', placeholder: 'AA', maskChar: '_'
-                                                   }}
-                                                   name={'passportSeries'}
-                                                   type={'input-mask'}
-                                            />
-                                            <Field onChange={(e) => setPassportNumber(e.target.value)} property={{
-                                                hideLabel: true,
-                                                mask: '9999999',
-                                                placeholder: '1234567',
-                                                maskChar: '_'
-                                            }} name={'passportNumber'} type={'input-mask'}/>
+                                            <Flex justify={'flex-end'}>
+                                                <Field onChange={(e) => setPassportSeries(e.target.value)}
+                                                       className={'mr-16'} style={{width: 75}}
+                                                       property={{
+                                                           hideLabel: true, mask: 'aa', placeholder: 'AA', maskChar: '_'
+                                                       }}
+                                                       name={'passportSeries'}
+                                                       type={'input-mask'}
+                                                />
+                                                <Field onChange={(e) => setPassportNumber(e.target.value)} property={{
+                                                    hideLabel: true,
+                                                    mask: '9999999',
+                                                    placeholder: '1234567',
+                                                    maskChar: '_'
+                                                }} name={'passportNumber'} type={'input-mask'}/>
 
-                                            <Field className={'ml-15'}
-                                                   property={{
-                                                       hideLabel: true,
-                                                       placeholder: 'Дата рождения',
-                                                       onChange: (e) => setBirthDate(e)
-                                                   }}
-                                                   name={'birthDate'} type={'datepicker'}/>
-                                            <Button onClick={() => getInfo('applicant')} className={'ml-15'}
-                                                    type={'button'}>Получить
-                                                данные</Button>
-                                        </Flex>}
+                                                <Field className={'ml-15'}
+                                                       property={{
+                                                           hideLabel: true,
+                                                           placeholder: 'Дата рождения',
+                                                           onChange: (e) => setBirthDate(e)
+                                                       }}
+                                                       name={'birthDate'} type={'datepicker'}/>
+                                                <Button onClick={() => getInfo('applicant')} className={'ml-15'}
+                                                        type={'button'}>Получить
+                                                    данные</Button>
+                                            </Flex>}
                                         {isEqual(applicantIsOwner ? owner : applicant, 'organization') &&
-                                        <Flex justify={'flex-end'}>
-                                            <Field onChange={(e) => setInn(e.target.value)} property={{
-                                                hideLabel: true,
-                                                mask: '999999999',
-                                                placeholder: 'Inn',
-                                                maskChar: '_'
-                                            }} name={'inn'} type={'input-mask'}/>
+                                            <Flex justify={'flex-end'}>
+                                                <Field onChange={(e) => setInn(e.target.value)} property={{
+                                                    hideLabel: true,
+                                                    mask: '999999999',
+                                                    placeholder: 'Inn',
+                                                    maskChar: '_'
+                                                }} name={'inn'} type={'input-mask'}/>
 
-                                            <Button onClick={() => getOrgInfo('applicant')} className={'ml-15'}
-                                                    type={'button'}>Получить
-                                                данные</Button>
-                                        </Flex>}
+                                                <Button onClick={() => getOrgInfo('applicant')} className={'ml-15'}
+                                                        type={'button'}>Получить
+                                                    данные</Button>
+                                            </Flex>}
                                     </Col>
                                 </Row>
                             </Col>
@@ -847,6 +857,7 @@ const OsagaCreateContainer = () => {
                             {isEqual(applicantIsOwner ? owner : applicant, 'person') && <>
                                 <Col xs={3} className={'mb-25'}>
                                     <Field
+                                        params={{required:true}}
                                         defaultValue={get(applicantIsOwner ? ownerPerson : applicantPerson, 'firstNameLatin')}
                                         label={'Firstname'}
                                         type={'input'}
@@ -854,6 +865,7 @@ const OsagaCreateContainer = () => {
                                 </Col>
                                 <Col xs={3} className={'mb-25'}>
                                     <Field
+                                        params={{required:true}}
                                         defaultValue={get(applicantIsOwner ? ownerPerson : applicantPerson, 'lastNameLatin')}
                                         label={'Lastname'}
                                         type={'input'}
@@ -861,18 +873,19 @@ const OsagaCreateContainer = () => {
                                 </Col>
                                 <Col xs={3} className={'mb-25'}>
                                     <Field
+                                        params={{required:true}}
                                         defaultValue={get(applicantIsOwner ? ownerPerson : applicantPerson, 'middleNameLatin')}
                                         label={'Middlename'}
                                         type={'input'}
                                         name={'applicant.person.fullName.middlename'}/>
                                 </Col>
                                 <Col xs={3} className={'mb-25'}>
-                                    <Field defaultValue={get(applicantIsOwner ? ownerPerson : applicantPerson, 'pinfl')}
+                                    <Field  params={{required:true}} defaultValue={get(applicantIsOwner ? ownerPerson : applicantPerson, 'pinfl')}
                                            label={'ПИНФЛ'} type={'input'}
                                            name={'applicant.person.passportData.pinfl'}/>
                                 </Col>
                                 <Col xs={3} className={'mb-25'}>
-                                    <Field property={{
+                                    <Field params={{required:true}} property={{
                                         mask: 'aa',
                                         placeholder: 'AA',
                                         maskChar: '_'
@@ -880,12 +893,21 @@ const OsagaCreateContainer = () => {
                                            name={'applicant.person.passportData.seria'}/>
                                 </Col>
                                 <Col xs={3} className={'mb-25'}>
-                                    <Field property={{
+                                    <Field
+                                        params={{required:true}}
+                                        property={{
                                         mask: '9999999',
                                         placeholder: '1234567',
                                         maskChar: '_'
                                     }} defaultValue={passportNumber} label={'Passport number'} type={'input-mask'}
                                            name={'applicant.person.passportData.number'}/>
+                                </Col>
+                                <Col xs={3} className={'mb-25'}>
+                                    <Field
+                                        defaultValue={get(applicantIsOwner ? ownerPerson : applicantPerson, 'issueDate')}
+                                        params={{required:true}}
+                                          label={'Issue date'} type={'datepicker'}
+                                        name={'applicant.person.passportData.issueDate'}/>
                                 </Col>
                                 <Col xs={3} className={'mb-25'}>
                                     <Field
