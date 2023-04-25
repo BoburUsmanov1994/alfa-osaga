@@ -24,7 +24,7 @@ const Router = ({...rest}) => {
                                 <Route path={"create"} element={<OsagaAgreementCreatePage/>}/>
                             </Route>
                             <Route path="/auth/logout" element={<LogOutPage/>}/>
-                            <Route path={"auth/*"} element={<Navigate to={'/osaga/create'} replace/>}/>
+                            <Route path={"auth/*"} element={<Navigate to={'/osaga'} replace/>}/>
                             <Route path={"/"} element={<Navigate to={'/osaga'} replace/>}/>
                             <Route path={"*"} element={<NotFoundPage/>}/>
                         </Route>

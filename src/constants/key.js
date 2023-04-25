@@ -1,5 +1,6 @@
 export const KEYS = {
     login: 'login',
+    getMeAlfa: 'getMeAlfa',
     create: 'osgorCreate',
     view: 'osgorView',
     list: 'list',
@@ -33,4 +34,5 @@ export const KEYS = {
     driverInfo: 'driverInfo',
     relatives: 'relatives',
     agencies: 'agencies',
+    agents: 'agents',
 }

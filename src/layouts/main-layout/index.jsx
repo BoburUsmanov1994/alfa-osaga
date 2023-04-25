@@ -9,6 +9,8 @@ import {KEYS} from "../../constants/key";
 import {URLS} from "../../constants/url";
 import {useStore} from "../../store";
 import {useGetAllQuery} from "../../hooks/api";
+import useGetAllQueryAlfa from "../../hooks/api/useGetAllQueryAlfa";
+import storage from "../../services/storage";
 
 const Styled = styled.div`
   padding-top: 80px;
@@ -18,13 +20,15 @@ const Styled = styled.div`
   }
 `;
 const MainLayout = ({...rest}) => {
-    const setUser = useStore(state => get(state, 'setUser', ()=>{}))
-    const {data, isLoading} = useGetAllQuery({
-        key: KEYS.getMe, url: URLS.getMe, cb: {
-            success: ({result}) => {
+    const setUser = useStore(state => get(state, 'setUser', []))
+    const token = get(JSON.parse(storage.get('settings')), 'state.translateToken', null) ;
+    const {data, isLoading} = useGetAllQueryAlfa({
+        key: KEYS.getMeAlfa, url: URLS.getMeAlfa, cb: {
+            success: ({users:result}) => {
                 setUser(result)
             }
-        }
+        },
+        enabled:!!(token)
     })
     return (
         <Styled {...rest}>

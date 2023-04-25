@@ -55,7 +55,17 @@ const Input = ({
         <Styled {...rest}>
             <div className="form-group">
                 {!get(property,'hideLabel',false) && <Label className={classNames({required:get(property,'hasRequiredLabel',false)})}>{label ?? name}</Label>}
-                <input
+                {get(property, "type") == 'number' ? <input
+                    className={classNames('form-input',{error:get(errors,`${name}`,false)})}
+                    name={name}
+                    {...register(name, params)}
+                    placeholder={get(property, "placeholder")}
+                    type={'number'}
+                    disabled={get(property, "disabled")}
+                    defaultValue={defaultValue}
+                    min={0}
+                    max={20}
+                /> : <input
                     className={classNames('form-input',{error:get(errors,`${name}`,false)})}
                     name={name}
                     {...register(name, params)}
@@ -63,21 +73,21 @@ const Input = ({
                     type={get(property, "type", "text")}
                     disabled={get(property, "disabled")}
                     defaultValue={defaultValue}
-                />
+                    min={0}
+                />}
                 <ErrorMessage
                     errors={errors}
                     name={name}
-                    render={({ messages = `${label} is required` }) => {
-
-                            if (errors[name]?.type == 'required') {
-                                messages = `${label ?? name} is required`;
-                            }
-                            if (errors[name]?.type == 'pattern') {
-                                messages = `${label ?? name} is not valid`;
-                            }
-                            if (errors[name]?.type == 'manual') {
-                                messages = `${label ?? name} ${errors[name].message}`;
-                            }
+                    render={({ messages = 'Field is required' }) => {
+                        if (get(get(errors,name),'type') == 'required') {
+                            messages = `${label ?? name} is required`;
+                        }
+                        if (get(get(errors,name),'type') == "pattern") {
+                            messages = `${label ?? name} is not valid format`;
+                        }
+                        if (get(get(errors,name),'type') == 'manual') {
+                            messages = `${label ?? name} ${errors[name].message}`;
+                        }
                         return <small className="form-error-message"> {messages}</small>;
                     }}
                 />

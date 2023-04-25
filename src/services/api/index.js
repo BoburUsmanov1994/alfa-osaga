@@ -18,6 +18,10 @@ const request = axios.create({
     baseURL: config.API_ROOT,
     params: {},
 });
+const alfa = axios.create({
+    baseURL: config.API_ROOT_ALFA,
+    params: {},
+});
 
 request.interceptors.request.use((config) => {
     NProgress.inc();
@@ -31,6 +35,17 @@ request.interceptors.request.use((config) => {
     console.log(error)
 });
 
+alfa.interceptors.request.use((config) => {
+    NProgress.inc();
+    const token = get(JSON.parse(storage.get('settings')), 'state.translateToken', null) ;
+    if (token) {
+        config.headers['auth'] = `${token}`
+    }
+    return config;
+}, (error) => {
+    NProgress.done(true);
+    console.log(error)
+});
 request.interceptors.response.use((response) => {
     NProgress.done(true);
     return response;
@@ -65,4 +80,4 @@ request.interceptors.response.use((response) => {
     return Promise.reject(error);
 });
 
-export {request};
+export {request,alfa};

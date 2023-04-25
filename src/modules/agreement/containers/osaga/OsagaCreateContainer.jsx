@@ -23,6 +23,7 @@ import Checkbox from 'rc-checkbox';
 import Modal from "../../../../components/modal";
 import Table from "../../../../components/table";
 import {Trash2} from "react-feather";
+import {useTranslation} from "react-i18next";
 
 const getEndDateByInsuranceTerm = (term, startDate) => {
     if (!isNil(term)) {
@@ -65,6 +66,9 @@ const OsagaCreateContainer = () => {
     const [driverInps, setDriverInps] = useState(null)
     const [driver, setDriver] = useState(null)
     const [drivers, setDrivers] = useState([])
+    const [agencyId, setAgencyId] = useState(null)
+    const [agentId, setAgentId] = useState(null)
+    const {t} = useTranslation()
 
     const setBreadcrumbs = useStore(state => get(state, 'setBreadcrumbs', () => {
     }))
@@ -147,6 +151,18 @@ const OsagaCreateContainer = () => {
         enabled: !!(regionId || get(ownerPerson, 'regionId'))
     })
     const districtList = getSelectOptionsListFromData(get(district, `data.result`, []), 'id', 'name')
+
+    const {data: agents} = useGetAllQuery({
+        key: [KEYS.agents, agencyId],
+        url: URLS.agents,
+        params: {
+            params: {
+                branch: agencyId
+            }
+        },
+        enabled: !!(agencyId)
+    })
+    const agentsList = getSelectOptionsListFromData(get(agents, `data.result`, []), 'id', 'name')
 
 
     const {
@@ -311,6 +327,9 @@ const OsagaCreateContainer = () => {
         }
         if (isEqual(name, 'vehicle.regionId')) {
             setRegionId(value)
+        }
+        if (isEqual(name, 'agencyId')) {
+            setAgencyId(value)
         }
 
     }
@@ -741,7 +760,7 @@ const OsagaCreateContainer = () => {
                             </>}
                             {isEqual(owner, 'organization') && <>
                                 <Col xs={3} className={'mb-25'}>
-                                    <Field props={{required: true}} label={'INN'} defaultValue={inn} property={{
+                                    <Field params={{required: true}} label={'INN'} defaultValue={inn} property={{
                                         mask: '999999999',
                                         placeholder: 'Inn',
                                         maskChar: '_'
@@ -749,7 +768,7 @@ const OsagaCreateContainer = () => {
 
                                 </Col>
                                 <Col xs={3} className={'mb-25'}>
-                                    <Field props={{required: true}} defaultValue={get(ownerOrganization, 'name')}
+                                    <Field params={{required: true}} defaultValue={get(ownerOrganization, 'name')}
                                            label={'Наименование'} type={'input'}
                                            name={'owner.organization.name'}/>
                                 </Col>
@@ -762,7 +781,7 @@ const OsagaCreateContainer = () => {
                                            name={'owner.organization.position'}/>
                                 </Col>
                                 <Col xs={3} className={'mb-25'}>
-                                    <Field defaultValue={get(ownerOrganization, 'phone')} props={{required: true}}
+                                    <Field defaultValue={get(ownerOrganization, 'phone')} params={{required: true}}
                                            label={'Телефон'} type={'input'}
                                            name={'owner.organization.phone'}/>
                                 </Col>
@@ -978,7 +997,7 @@ const OsagaCreateContainer = () => {
                             </>}
                             {isEqual(applicantIsOwner ? owner : applicant, 'organization') && <>
                                 <Col xs={3} className={'mb-25'}>
-                                    <Field props={{required: true}} label={'INN'} defaultValue={inn} property={{
+                                    <Field params={{required: true}} label={'INN'} defaultValue={inn} property={{
                                         mask: '999999999',
                                         placeholder: 'Inn',
                                         maskChar: '_'
@@ -986,7 +1005,7 @@ const OsagaCreateContainer = () => {
 
                                 </Col>
                                 <Col xs={3} className={'mb-25'}>
-                                    <Field props={{required: true}}
+                                    <Field params={{required: true}}
                                            defaultValue={get(applicantIsOwner ? ownerOrganization : applicantOrganization, 'name')}
                                            label={'Наименование'} type={'input'}
                                            name={'applicant.organization.name'}/>
@@ -1002,7 +1021,7 @@ const OsagaCreateContainer = () => {
                                 <Col xs={3} className={'mb-25'}>
                                     <Field
                                         defaultValue={get(applicantIsOwner ? ownerOrganization : applicantOrganization, 'phone')}
-                                        props={{required: true}}
+                                        params={{required: true}}
                                         label={'Телефон'} type={'input'}
                                         name={'applicant.organization.phone'}/>
                                 </Col>
@@ -1067,20 +1086,26 @@ const OsagaCreateContainer = () => {
                                 <Row>
                                     <Col xs={12} className={'mb-25'}>
                                         <Field
-                                            options={[]}
+                                            options={[{label: t('No agent'), value: undefined}, ...agentsList]}
                                             label={'Агент'}
                                             type={'select'}
-                                            name={'agencyId'}/>
+                                            name={'agentId'}/>
                                     </Col>
 
                                     <Col xs={6} className={'mb-25'}>
                                         <Field
+                                            params={{required: true}}
+                                            property={{type: 'number', disabled: isEqual(agentId, undefined)}}
+                                            defaultValue={isEqual(agentId, undefined) ? 0 : 20}
                                             label={'Вознограждение %'}
                                             type={'input'}
                                             name={'rewardPercent'}/>
                                     </Col>
                                     <Col xs={6} className={'mb-25'}>
                                         <Field
+                                            params={{required: true}}
+                                            defaultValue={5}
+                                            property={{disabled: true}}
                                             label={'Отчисления в РПМ  %'}
                                             type={'input'}
                                             name={'rpmPercent'}/>

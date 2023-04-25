@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import styled from "styled-components";
-import {get, isEmpty, isFunction} from "lodash";
+import {get, hasIn, isEmpty, isFunction,isNil} from "lodash";
 import {ErrorMessage} from "@hookform/error-message";
 import Label from "../../../../components/ui/label";
 import NumberFormat from 'react-number-format';
@@ -28,28 +28,30 @@ const Styled = styled.div`
   }
 `;
 const NumberFormatInput = ({
-                         Controller,
-                         control,
-                         register,
-                         disabled = false,
-                         name,
-                         errors,
-                         params,
-                         property,
-                         defaultValue,
-                         getValues,
-                         watch,
-                         label,
-                         setValue,
-                         getValueFromField = () => {
-                         },
-                         ...rest
-                     }) => {
+                               Controller,
+                               control,
+                               register,
+                               disabled = false,
+                               name,
+                               errors,
+                               params,
+                               property,
+                               defaultValue=0,
+                               getValues,
+                               watch,
+                               label,
+                               setValue,
+                               getValueFromField = () => {
+                               },
+                               ...rest
+                           }) => {
 
     const [val,setVal] = useState(0)
 
     useEffect(() => {
-        setVal(defaultValue)
+        if(!isNil(defaultValue)) {
+            setVal(defaultValue)
+        }
     }, [defaultValue])
 
     useEffect(() => {
@@ -76,7 +78,7 @@ const NumberFormatInput = ({
                         <NumberFormat
                             {...field}
                             value={val}
-                            className={`masked-input ${!isEmpty(errors) ? "error" : ''}`}
+                            className={`masked-input ${hasIn(errors,name) ? "error" : ''}`}
                             placeholder={get(property, "placeholder")}
                             suffix={get(property, "suffix",'')}
                             thousandSeparator={get(property, "thousandSeparator"," ")}

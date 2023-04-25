@@ -1,6 +1,7 @@
 export const URLS = {
     login: 'api/v1/auth/login',
     getMe: 'api/v1/auth/get-me',
+    getMeAlfa: 'user/f/getme',
     create: 'api/v1/external-clients/osago-form-create',
     view: 'api/osaga/show',
     list: 'api/v1/external-clients/osago-form-list',
@@ -31,4 +32,5 @@ export const URLS = {
     driverInfo: 'api/v1/external-clients/driver-info',
     relatives: 'api/v1/external-clients/relatives',
     agencies: 'api/v1/external-clients/agencies',
+    agents: 'api/v1/external-clients/agents',
 }
