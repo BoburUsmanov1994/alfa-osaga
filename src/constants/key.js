@@ -32,4 +32,5 @@ export const KEYS = {
     driverTypes: 'driverTypes',
     driverInfo: 'driverInfo',
     relatives: 'relatives',
+    agencies: 'agencies',
 }

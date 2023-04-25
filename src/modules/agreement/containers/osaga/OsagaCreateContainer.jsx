@@ -73,12 +73,15 @@ const OsagaCreateContainer = () => {
     }, {
         id: 2, title: 'Добавить OSAGA', path: '/osaga/create',
     }], [])
+    const user = useStore((state) => get(state, 'user'))
 
 
     useEffect(() => {
         setBreadcrumbs(breadcrumbs)
     }, [])
 
+    const {data: filials, isLoading: isLoadingFilials} = useGetAllQuery({key: KEYS.agencies, url: URLS.agencies})
+    const filialList = getSelectOptionsListFromData(get(filials, `data.result`, []), 'id', 'name')
 
     const {data: insuranceTerms, isLoading: isLoadingInsuranceTerms} = useGetAllQuery({
         key: KEYS.insuranceTerms, url: URLS.insuranceTerms
@@ -389,18 +392,14 @@ const OsagaCreateContainer = () => {
                                     <Col xs={5}>Статус</Col>
                                     <Col xs={7}><Button green>Новый</Button></Col>
                                 </Row>
+                                <Row align={'center'} className={'mb-25'}>
+                                    <Col xs={5}>Филиал </Col>
+                                    <Col xs={7}><Field disabled defaultValue={get(user, 'branch_Id.fond_id')}
+                                                       label={'Filial'} params={{required: true}} options={filialList}
+                                                       property={{hideLabel: true}} type={'select'}
+                                                       name={'agencyId'}/></Col>
+                                </Row>
 
-                                <Row align={'center'} className={'mb-25'}>
-                                    <Col xs={5}>Серия полиса:</Col>
-                                    <Col xs={7}><Field property={{hideLabel: true}} type={'input'}
-                                                       name={'seria'}/></Col>
-                                </Row>
-                                <Row align={'center'} className={'mb-25'}>
-                                    <Col xs={5}>Номер полиса: </Col>
-                                    <Col xs={7}><Field params={{required: true}} property={{hideLabel: true}}
-                                                       type={'input'}
-                                                       name={'number'}/></Col>
-                                </Row>
                                 <Row align={'center'} className={'mb-25'}>
                                     <Col xs={5}>Наличие страховых случаев:</Col>
                                     <Col xs={7}><Field options={accidentTypeList} params={{required: true}}

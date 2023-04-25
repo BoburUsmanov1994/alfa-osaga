@@ -1,10 +1,14 @@
 import React from 'react';
 import {Outlet} from "react-router-dom";
 import Header from "../../components/header";
-
+import {get} from "lodash"
 import styled from "styled-components";
 import Sidebar from "../../components/sidebar";
 import Content from "../../components/content";
+import {KEYS} from "../../constants/key";
+import {URLS} from "../../constants/url";
+import {useStore} from "../../store";
+import {useGetAllQuery} from "../../hooks/api";
 
 const Styled = styled.div`
   padding-top: 80px;
@@ -14,7 +18,14 @@ const Styled = styled.div`
   }
 `;
 const MainLayout = ({...rest}) => {
-
+    const setUser = useStore(state => get(state, 'setUser', ()=>{}))
+    const {data, isLoading} = useGetAllQuery({
+        key: KEYS.getMe, url: URLS.getMe, cb: {
+            success: ({result}) => {
+                setUser(result)
+            }
+        }
+    })
     return (
         <Styled {...rest}>
             <Header/>
