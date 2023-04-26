@@ -57,6 +57,9 @@ const GlobalStyles = createGlobalStyle`
   .text-danger{
     color: #EF142F;
   }
+  .text-uppercase{
+    text-transform: uppercase !important;
+  }
   .cursor-pointer {
     cursor: pointer;
   }

@@ -1,6 +1,6 @@
 import React, {useEffect, useMemo, useState} from 'react';
 import {useStore} from "../../../../store";
-import {find, get, isEqual, isNil, round} from "lodash";
+import {find, get, isEqual, isNil, round, upperCase} from "lodash";
 import Panel from "../../../../components/panel";
 import Search from "../../../../components/search";
 import {Col, Row} from "react-grid-system";
@@ -303,7 +303,7 @@ const OsagaCreateContainer = () => {
         if (isEqual(name, 'rpmPercent')) {
             setRpmPercent(value)
         }
-        if (isEqual(name, 'rewardPercent')) {
+        if (isEqual(name, 'agentReward')) {
             setRewardPercent(value)
         }
 
@@ -337,22 +337,21 @@ const OsagaCreateContainer = () => {
     const create = ({data}) => {
         const {
             accident,
-            agencyId,
             discount,
             birthDate,
             number,
             passportNumber,
             passportSeries,
             policies,
-            rewardPercent,
             rewardSum,
-            rpmPercent,
             rpmSum,
             seria,
             termCategories,
             terms,
             details,
             vehicle,
+            owner,
+            agentReward,
             ...rest
         } = data
         const {regionId, ...vehicleRestData} = vehicle;
@@ -360,7 +359,12 @@ const OsagaCreateContainer = () => {
                 url: URLS.create, attributes: {
                     cost,
                     details: {...details, driverNumberRestriction: true, specialNote: '', insuredActivityType: ''},
-                    vehicle: {...vehicleRestData, govNumber},
+                    vehicle: {...vehicleRestData, govNumber,regionId},
+                    owner:{
+                        ...owner,
+                        applicantIsOwner:applicantIsOwner
+                    },
+                    agentReward:parseInt(agentReward),
                     ...rest
                 }
             },
@@ -460,7 +464,6 @@ const OsagaCreateContainer = () => {
 
                             </Col>
                             <Col xs={4}>
-
                                 <Row align={'center'} className={'mb-25'}>
                                     <Col xs={5}>Срок страхования:</Col>
                                     <Col xs={7}><Field options={insuranceTermsList} params={{required: true}}
@@ -678,14 +681,14 @@ const OsagaCreateContainer = () => {
                                            defaultValue={dayjs(get(ownerPerson, 'startDate')).toDate()}
                                            label={'Issue date'}
                                            type={'datepicker'}
-                                           name={'owner.person.issueDate'}/>
+                                           name={'owner.person.passportData.issueDate'}/>
                                 </Col>
                                 <Col xs={3} className={'mb-25'}>
                                     <Field params={{required:true}}
                                            defaultValue={get(ownerPerson, 'issuedBy')}
                                            label={'Issued by'}
                                            type={'input'}
-                                           name={'owner.person.issuedBy'}/>
+                                           name={'owner.person.passportData.issuedBy'}/>
                                 </Col>
                                 <Col xs={3} className={'mb-25'}>
                                     <Field params={{required:true}}
@@ -827,7 +830,7 @@ const OsagaCreateContainer = () => {
                                     <Col xs={8} className={'text-right'}>
                                         {isEqual(applicantIsOwner ? owner : applicant, 'person') &&
                                             <Flex justify={'flex-end'}>
-                                                <Field onChange={(e) => setPassportSeries(e.target.value)}
+                                                <Field onChange={(e) => setPassportSeries(upperCase(e.target.value))}
                                                        className={'mr-16'} style={{width: 75}}
                                                        property={{
                                                            hideLabel: true, mask: 'aa', placeholder: 'AA', maskChar: '_'
@@ -928,6 +931,13 @@ const OsagaCreateContainer = () => {
                                         name={'applicant.person.passportData.issueDate'}/>
                                 </Col>
                                 <Col xs={3} className={'mb-25'}>
+                                    <Field params={{required:true}}
+                                           defaultValue={get(ownerPerson, 'issuedBy')}
+                                           label={'Issued by'}
+                                           type={'input'}
+                                           name={'applicant.person.passportData.issuedBy'}/>
+                                </Col>
+                                <Col xs={3} className={'mb-25'}>
                                     <Field
                                         defaultValue={dayjs(get(applicantIsOwner ? ownerPerson : applicantPerson, 'birthDate')).toDate()}
                                         label={'Birth date'}
@@ -985,7 +995,7 @@ const OsagaCreateContainer = () => {
                                         defaultValue={get(applicantIsOwner ? ownerPerson : applicantPerson, 'phone')}
                                         label={'Phone'}
                                         type={'input'}
-                                        name={'applicant.person.phone'}/>
+                                        name={'applicant.person.phoneNumber'}/>
                                 </Col>
                                 <Col xs={3} className={'mb-25'}>
                                     <Field
@@ -1099,7 +1109,7 @@ const OsagaCreateContainer = () => {
                                             defaultValue={isEqual(agentId, undefined) ? 0 : 20}
                                             label={'Вознограждение %'}
                                             type={'input'}
-                                            name={'rewardPercent'}/>
+                                            name={'agentReward'}/>
                                     </Col>
                                     <Col xs={6} className={'mb-25'}>
                                         <Field
@@ -1140,7 +1150,7 @@ const OsagaCreateContainer = () => {
                     <Row>
                         <Col xs={12} className={' mt-15'}>
                             <Flex>
-                                <Field onChange={(e) => setDriverPassportSeries(e.target.value)}
+                                <Field  onChange={(e) => setDriverPassportSeries(upperCase(e.target.value))}
                                        className={'mr-16'} style={{width: 75}}
                                        property={{
                                            hideLabel: true, mask: 'aa', placeholder: 'AA', maskChar: '_'

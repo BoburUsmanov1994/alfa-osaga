@@ -3,7 +3,7 @@ import styled from "styled-components";
 import uzImg from "../../assets/images/uz.png"
 import {useForm, Controller} from "react-hook-form";
 import InputMask from "react-input-mask";
-import {get, isEmpty, includes} from "lodash";
+import {get, isEmpty, includes, toUpper} from "lodash";
 
 const Styled = styled.div`
   display: flex;
@@ -110,7 +110,7 @@ const Index = ({
     const {register, handleSubmit, watch, control, formState: {errors}} = useForm();
     const [value, setValue] = useState('')
     useEffect(() => {
-        setValue(`${watch("govNumber[0]")}${watch("govNumber[1]")}${watch("govNumber[2]")}${watch("govNumber[3]")}`)
+        setValue(`${watch("govNumber[0]")}${toUpper(watch("govNumber[1]"))}${watch("govNumber[2]")}${toUpper(watch("govNumber[3]"))}`)
     }, [watch("govNumber[0]"), watch("govNumber[1]"), watch("govNumber[2]"), watch("govNumber[3]")])
     useEffect(() => {
         if (!includes(value, 'undefined')) {
