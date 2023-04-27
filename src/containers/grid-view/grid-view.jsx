@@ -141,7 +141,7 @@ const GridView = ({
         }).then((result) => {
             if (result.isConfirmed) {
                 if(dataKey){
-                    deleteRequest({url:`${deleteUrl}?osgor_formId=${id}` ?? url})
+                    deleteRequest({url:`${deleteUrl}?application_number=${id}` ?? url})
                 }else {
                     deleteRequest({url: `${url}/${id}`})
                 }

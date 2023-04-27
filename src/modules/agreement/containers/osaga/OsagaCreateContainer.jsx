@@ -15,7 +15,6 @@ import {KEYS} from "../../../../constants/key";
 import {URLS} from "../../../../constants/url";
 import {getSelectOptionsListFromData} from "../../../../utils";
 import {OverlayLoader} from "../../../../components/loader";
-import qrcodeImg from "../../../../assets/images/qrcode.png"
 import dayjs from "dayjs";
 import CarNumber from "../../../../components/car-number";
 import {toast} from "react-toastify";
@@ -359,12 +358,13 @@ const OsagaCreateContainer = () => {
                 url: URLS.create, attributes: {
                     cost,
                     details: {...details, driverNumberRestriction: true, specialNote: '', insuredActivityType: ''},
-                    vehicle: {...vehicleRestData, govNumber,regionId},
-                    owner:{
+                    vehicle: {...vehicleRestData, govNumber, regionId},
+                    owner: {
                         ...owner,
-                        applicantIsOwner:applicantIsOwner
+                        applicantIsOwner: applicantIsOwner
                     },
-                    agentReward:parseInt(agentReward),
+                    agentReward: parseInt(agentReward),
+                    drivers,
                     ...rest
                 }
             },
@@ -387,7 +387,6 @@ const OsagaCreateContainer = () => {
     if (isLoadingAccidentType || isLoadingTermCategory || isLoadingRegion || isLoadingInsuranceTerms || isLoadingDiscount) {
         return <OverlayLoader/>
     }
-
 
     return (<>
         {(isLoadingPersonalInfo || isLoadingOrganizationInfo || isLoadingVehicleInfo || isLoadingPost) &&
@@ -642,26 +641,30 @@ const OsagaCreateContainer = () => {
                             </Col>
                             {isEqual(owner, 'person') && <>
                                 <Col xs={3} className={'mb-25'}>
-                                    <Field params={{required:true}} defaultValue={get(ownerPerson, 'firstNameLatin')} label={'Firstname'}
+                                    <Field params={{required: true}} defaultValue={get(ownerPerson, 'firstNameLatin')}
+                                           label={'Firstname'}
                                            type={'input'}
                                            name={'owner.person.fullName.firstname'}/>
                                 </Col>
                                 <Col xs={3} className={'mb-25'}>
-                                    <Field params={{required:true}} defaultValue={get(ownerPerson, 'lastNameLatin')} label={'Lastname'}
+                                    <Field params={{required: true}} defaultValue={get(ownerPerson, 'lastNameLatin')}
+                                           label={'Lastname'}
                                            type={'input'}
                                            name={'owner.person.fullName.lastname'}/>
                                 </Col>
                                 <Col xs={3} className={'mb-25'}>
-                                    <Field params={{required:true}} defaultValue={get(ownerPerson, 'middleNameLatin')} label={'Middlename'}
+                                    <Field params={{required: true}} defaultValue={get(ownerPerson, 'middleNameLatin')}
+                                           label={'Middlename'}
                                            type={'input'}
                                            name={'owner.person.fullName.middlename'}/>
                                 </Col>
                                 <Col xs={3} className={'mb-25'}>
-                                    <Field params={{required:true}} defaultValue={get(ownerPerson, 'pinfl')} label={'ПИНФЛ'} type={'input'}
+                                    <Field params={{required: true}} defaultValue={get(ownerPerson, 'pinfl')}
+                                           label={'ПИНФЛ'} type={'input'}
                                            name={'owner.person.passportData.pinfl'}/>
                                 </Col>
                                 <Col xs={3} className={'mb-25'}>
-                                    <Field params={{required:true}} property={{
+                                    <Field params={{required: true}} property={{
                                         mask: 'aa',
                                         placeholder: 'AA',
                                         maskChar: '_'
@@ -669,7 +672,7 @@ const OsagaCreateContainer = () => {
                                            name={'owner.person.passportData.seria'}/>
                                 </Col>
                                 <Col xs={3} className={'mb-25'}>
-                                    <Field params={{required:true}} property={{
+                                    <Field params={{required: true}} property={{
                                         mask: '9999999',
                                         placeholder: '1234567',
                                         maskChar: '_'
@@ -677,25 +680,25 @@ const OsagaCreateContainer = () => {
                                            name={'owner.person.passportData.number'}/>
                                 </Col>
                                 <Col xs={3} className={'mb-25'}>
-                                    <Field params={{required:true}}
+                                    <Field params={{required: true}}
                                            defaultValue={dayjs(get(ownerPerson, 'startDate')).toDate()}
                                            label={'Issue date'}
                                            type={'datepicker'}
                                            name={'owner.person.passportData.issueDate'}/>
                                 </Col>
                                 <Col xs={3} className={'mb-25'}>
-                                    <Field params={{required:true}}
+                                    <Field params={{required: true}}
                                            defaultValue={get(ownerPerson, 'issuedBy')}
                                            label={'Issued by'}
                                            type={'input'}
                                            name={'owner.person.passportData.issuedBy'}/>
                                 </Col>
                                 <Col xs={3} className={'mb-25'}>
-                                    <Field params={{required:true}}
-                                        defaultValue={dayjs(get(ownerPerson, 'birthDate')).toDate()}
-                                        label={'Birth date'}
-                                        type={'datepicker'}
-                                        name={'owner.person.birthDate'}/>
+                                    <Field params={{required: true}}
+                                           defaultValue={dayjs(get(ownerPerson, 'birthDate')).toDate()}
+                                           label={'Birth date'}
+                                           type={'datepicker'}
+                                           name={'owner.person.birthDate'}/>
                                 </Col>
                                 <Col xs={3} className={'mb-25'}>
                                     <Field
@@ -714,7 +717,7 @@ const OsagaCreateContainer = () => {
                                 </Col>
                                 <Col xs={3} className={'mb-25'}>
                                     <Field
-                                        params={{required:true}}
+                                        params={{required: true}}
                                         options={regionList}
                                         defaultValue={get(ownerPerson, 'regionId')}
                                         label={'Region'}
@@ -723,7 +726,7 @@ const OsagaCreateContainer = () => {
                                 </Col>
                                 <Col xs={3} className={'mb-25'}>
                                     <Field
-                                        params={{required:true}}
+                                        params={{required: true}}
                                         options={districtList}
                                         defaultValue={get(ownerPerson, 'districtId')}
                                         label={'District'}
@@ -747,7 +750,7 @@ const OsagaCreateContainer = () => {
                                 </Col>
                                 <Col xs={3} className={'mb-25'}>
                                     <Field
-                                        params={{required:true}}
+                                        params={{required: true}}
                                         defaultValue={get(ownerPerson, 'phone')}
                                         label={'Phone'}
                                         type={'input'}
@@ -878,7 +881,7 @@ const OsagaCreateContainer = () => {
                             {isEqual(applicantIsOwner ? owner : applicant, 'person') && <>
                                 <Col xs={3} className={'mb-25'}>
                                     <Field
-                                        params={{required:true}}
+                                        params={{required: true}}
                                         defaultValue={get(applicantIsOwner ? ownerPerson : applicantPerson, 'firstNameLatin')}
                                         label={'Firstname'}
                                         type={'input'}
@@ -886,7 +889,7 @@ const OsagaCreateContainer = () => {
                                 </Col>
                                 <Col xs={3} className={'mb-25'}>
                                     <Field
-                                        params={{required:true}}
+                                        params={{required: true}}
                                         defaultValue={get(applicantIsOwner ? ownerPerson : applicantPerson, 'lastNameLatin')}
                                         label={'Lastname'}
                                         type={'input'}
@@ -894,19 +897,20 @@ const OsagaCreateContainer = () => {
                                 </Col>
                                 <Col xs={3} className={'mb-25'}>
                                     <Field
-                                        params={{required:true}}
+                                        params={{required: true}}
                                         defaultValue={get(applicantIsOwner ? ownerPerson : applicantPerson, 'middleNameLatin')}
                                         label={'Middlename'}
                                         type={'input'}
                                         name={'applicant.person.fullName.middlename'}/>
                                 </Col>
                                 <Col xs={3} className={'mb-25'}>
-                                    <Field  params={{required:true}} defaultValue={get(applicantIsOwner ? ownerPerson : applicantPerson, 'pinfl')}
+                                    <Field params={{required: true}}
+                                           defaultValue={get(applicantIsOwner ? ownerPerson : applicantPerson, 'pinfl')}
                                            label={'ПИНФЛ'} type={'input'}
                                            name={'applicant.person.passportData.pinfl'}/>
                                 </Col>
                                 <Col xs={3} className={'mb-25'}>
-                                    <Field params={{required:true}} property={{
+                                    <Field params={{required: true}} property={{
                                         mask: 'aa',
                                         placeholder: 'AA',
                                         maskChar: '_'
@@ -915,23 +919,23 @@ const OsagaCreateContainer = () => {
                                 </Col>
                                 <Col xs={3} className={'mb-25'}>
                                     <Field
-                                        params={{required:true}}
+                                        params={{required: true}}
                                         property={{
-                                        mask: '9999999',
-                                        placeholder: '1234567',
-                                        maskChar: '_'
-                                    }} defaultValue={passportNumber} label={'Passport number'} type={'input-mask'}
-                                           name={'applicant.person.passportData.number'}/>
+                                            mask: '9999999',
+                                            placeholder: '1234567',
+                                            maskChar: '_'
+                                        }} defaultValue={passportNumber} label={'Passport number'} type={'input-mask'}
+                                        name={'applicant.person.passportData.number'}/>
                                 </Col>
                                 <Col xs={3} className={'mb-25'}>
                                     <Field
                                         defaultValue={get(applicantIsOwner ? ownerPerson : applicantPerson, 'issueDate')}
-                                        params={{required:true}}
-                                          label={'Issue date'} type={'datepicker'}
+                                        params={{required: true}}
+                                        label={'Issue date'} type={'datepicker'}
                                         name={'applicant.person.passportData.issueDate'}/>
                                 </Col>
                                 <Col xs={3} className={'mb-25'}>
-                                    <Field params={{required:true}}
+                                    <Field params={{required: true}}
                                            defaultValue={get(ownerPerson, 'issuedBy')}
                                            label={'Issued by'}
                                            type={'input'}
@@ -1067,20 +1071,20 @@ const OsagaCreateContainer = () => {
                             <Col xs={12}>
                                 <div className={'horizontal-scroll mt-15 '}>
                                     <Table bordered hideThead={false}
-                                           thead={['Фамилия ', 'Имя', 'Отчество', 'Сария паспорта', 'Pinfl', 'Номер паспорта', 'Дата паспорта', 'Серия вод.удостоверения', 'Номер вод.удостоверения', 'Дата вод.удостоверения', 'Степень родства', 'Action']}>
+                                           thead={['Фамилия ', 'Имя', 'Отчество', 'Сария паспорта', 'Номер паспорта', 'Pinfl', 'Дата паспорта', 'Серия вод.удостоверения', 'Номер вод.удостоверения', 'Дата вод.удостоверения', 'Степень родства', 'Action']}>
                                         {
                                             drivers.map((item, index) => <tr>
-                                                <td>{get(item, 'driver.fullName.lastname')}</td>
-                                                <td>{get(item, 'driver.fullName.firstname')}</td>
-                                                <td>{get(item, 'driver.fullName.middlename')}</td>
-                                                <td>{get(item, 'driver.passportData.seria')}</td>
-                                                <td>{get(item, 'driver.passportData.number')}</td>
-                                                <td>{get(item, 'driver.passportData.pinfl')}</td>
-                                                <td>{get(item, 'driver.startDate')}</td>
-                                                <td>{get(item, 'driver.licenseSeria')}</td>
-                                                <td>{get(item, 'driver.licenseNumber')}</td>
-                                                <td>{get(item, 'driver.issueDate')}</td>
-                                                <td>{get(find(relativeList, (r) => get(r, 'value') == get(item, 'driver.relative')), 'label')}</td>
+                                                <td>{get(item, 'fullName.lastname')}</td>
+                                                <td>{get(item, 'fullName.firstname')}</td>
+                                                <td>{get(item, 'fullName.middlename')}</td>
+                                                <td>{upperCase(get(item, 'passportData.seria', ''))}</td>
+                                                <td>{get(item, 'passportData.number')}</td>
+                                                <td>{get(item, 'passportData.pinfl')}</td>
+                                                <td>{get(item, 'startDate')}</td>
+                                                <td>{get(item, 'licenseSeria')}</td>
+                                                <td>{get(item, 'licenseNumber')}</td>
+                                                <td>{get(item, 'issueDate')}</td>
+                                                <td>{get(find(relativeList, (r) => get(r, 'value') == get(item, 'relative')), 'label')}</td>
                                                 <td><Trash2 onClick={() => removeDriver(index)}
                                                             className={'cursor-pointer'} color={'red'}/></td>
                                             </tr>)
@@ -1150,7 +1154,7 @@ const OsagaCreateContainer = () => {
                     <Row>
                         <Col xs={12} className={' mt-15'}>
                             <Flex>
-                                <Field  onChange={(e) => setDriverPassportSeries(upperCase(e.target.value))}
+                                <Field onChange={(e) => setDriverPassportSeries(upperCase(e.target.value))}
                                        className={'mr-16'} style={{width: 75}}
                                        property={{
                                            hideLabel: true, mask: 'aa', placeholder: 'AA', maskChar: '_'
@@ -1177,47 +1181,54 @@ const OsagaCreateContainer = () => {
                                     данные</Button>
                             </Flex></Col>
                         <Col xs={4} className={'mt-15'}>
-                            <Field defaultValue={get(driver, 'DriverPersonInfo.lastNameLatin')} label={'Фамилия'}
+                            <Field params={{required:true}} defaultValue={get(driver, 'DriverPersonInfo.lastNameLatin')} label={'Фамилия'}
                                    type={'input'}
                                    name={'driver.fullName.lastname'}/>
                         </Col>
                         <Col xs={4} className={'mt-15'}>
-                            <Field defaultValue={get(driver, 'DriverPersonInfo.firstNameLatin')} label={'Имя'}
+                            <Field params={{required:true}} defaultValue={get(driver, 'DriverPersonInfo.firstNameLatin')} label={'Имя'}
                                    type={'input'}
                                    name={'driver.fullName.firstname'}/>
                         </Col>
                         <Col xs={4} className={'mt-15'}>
-                            <Field defaultValue={get(driver, 'DriverPersonInfo.middleNameLatin')} label={'Отчество'}
+                            <Field params={{required:true}} defaultValue={get(driver, 'DriverPersonInfo.middleNameLatin')} label={'Отчество'}
                                    type={'input'}
                                    name={'driver.fullName.middlename'}/>
                         </Col>
                         <Col xs={4} className={'mt-15'}>
-                            <Field defaultValue={get(driver, 'DriverPersonInfo.startDate')} label={'Дата паспорта'}
-                                   type={'datepicker'}
-                                   name={'driver.startDate'}/>
+                            <Field defaultValue={get(driver, 'DriverPersonInfo.startDate')} params={{required:true}} label={'Дата выдачи'} type={'datepicker'}
+                                   name={'driver.passportData.issueDate'}/>
                         </Col>
                         <Col xs={4} className={'mt-15'}>
-                            <Field defaultValue={get(driver, 'DriverInfo.licenseSeria')}
+                            <Field defaultValue={get(driver, 'DriverPersonInfo.birthDate')} params={{required:true}} label={'Birth date'} type={'datepicker'}
+                                   name={'driver.birthDate'}/>
+                        </Col>
+                        <Col xs={4} className={'mt-15'}>
+                            <Field defaultValue={get(driver, 'DriverPersonInfo.issuedBy')} params={{required:true}} label={'Issued by'} type={'input'}
+                                   name={'driver.passportData.issuedBy'}/>
+                        </Col>
+
+                        <Col xs={4} className={'mt-15'}>
+                            <Field defaultValue={get(driver, 'DriverInfo.licenseSeria','')}
                                    label={'Серия вод.удостоверения'}
                                    type={'input'}
                                    name={'driver.licenseSeria'}/>
                         </Col>
                         <Col xs={4} className={'mt-15'}>
-                            <Field defaultValue={get(driver, 'DriverInfo.licenseNumber')}
+                            <Field  defaultValue={get(driver, 'DriverInfo.licenseNumber','')}
                                    label={'Номер вод.удостоверения'}
                                    type={'input'}
                                    name={'driver.licenseNumber'}/>
                         </Col>
                         <Col xs={4} className={'mt-15'}>
-                            <Field defaultValue={get(driver, 'DriverPersonInfo.issueDate')}
+                            <Field defaultValue={get(driver, 'DriverInfo.issueDate','')}
                                    label={'Дата вод.удостоверения'}
                                    type={'datepicker'}
-                                   name={'driver.issueDate'}/>
+                                   name={'driver.licenseIssueDate'}/>
                         </Col>
                         <Col xs={4} className={'mt-15'}>
-                            <Field options={relativeList}
+                            <Field params={{required:true}} options={relativeList}
                                    label={'Степень родства'}
-                                   property={{hideLabel: true}}
                                    type={'select'}
                                    name={'driver.relative'}/>
                         </Col>

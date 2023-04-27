@@ -3,7 +3,7 @@ import styled from "styled-components";
 import uzImg from "../../assets/images/uz.png"
 import {useForm, Controller} from "react-hook-form";
 import InputMask from "react-input-mask";
-import {get, isEmpty, includes, toUpper} from "lodash";
+import {get, isEmpty, includes, toUpper, slice} from "lodash";
 
 const Styled = styled.div`
   display: flex;
@@ -105,13 +105,17 @@ const Styled = styled.div`
 `;
 const Index = ({
                    getGovNumber = () => {
-                   }, ...rest
+                   },
+                   defaultValue = null,
+                   disabled = false,
+                   ...rest
                }) => {
     const {register, handleSubmit, watch, control, formState: {errors}} = useForm();
     const [value, setValue] = useState('')
     useEffect(() => {
         setValue(`${watch("govNumber[0]")}${toUpper(watch("govNumber[1]"))}${watch("govNumber[2]")}${toUpper(watch("govNumber[3]"))}`)
     }, [watch("govNumber[0]"), watch("govNumber[1]"), watch("govNumber[2]"), watch("govNumber[3]")])
+
     useEffect(() => {
         if (!includes(value, 'undefined')) {
             getGovNumber(value)
@@ -125,6 +129,8 @@ const Index = ({
                 name={'govNumber[0]'}
                 render={({field}) => (
                     <InputMask
+                        disabled
+                        defaultValue={slice(defaultValue,0, 2)}
                         {...field}
                         className={`input first`}
                         placeholder={'01'}
@@ -139,6 +145,8 @@ const Index = ({
                 name={'govNumber[1]'}
                 render={({field}) => (
                     <InputMask
+                        disabled
+                        defaultValue={slice(defaultValue,2, 3)}
                         {...field}
                         className={`input second`}
                         placeholder={'A'}
@@ -153,6 +161,8 @@ const Index = ({
                 name={'govNumber[2]'}
                 render={({field}) => (
                     <InputMask
+                        disabled
+                        defaultValue={slice(defaultValue,3, 6)}
                         {...field}
                         className={`input third`}
                         placeholder={'777'}
@@ -167,6 +177,8 @@ const Index = ({
                 name={'govNumber[3]'}
                 render={({field}) => (
                     <InputMask
+                        disabled
+                        defaultValue={slice(defaultValue,6, 8)}
                         {...field}
                         className={`input fourth`}
                         placeholder={'AA'}

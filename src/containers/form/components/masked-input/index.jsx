@@ -62,6 +62,7 @@ const MaskedInput = ({
                     render={({field}) => (
                         <InputMask
                             {...field}
+                            disabled={disabled}
                             className={`masked-input text-uppercase ${!isEmpty(errors) ? "error" : ''}`}
                             placeholder={get(property, "placeholder")}
                             mask={get(property, "mask","aa")}

@@ -62,7 +62,7 @@ const NumberFormatInput = ({
     }, [val])
 
     useEffect(() => {
-        getValueFromField(getValues(name), name);
+            getValueFromField(getValues(name), name);
     }, [watch(name)]);
     return (
         <Styled {...rest}>

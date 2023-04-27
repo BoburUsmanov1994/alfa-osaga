@@ -3,7 +3,7 @@ export const URLS = {
     getMe: 'api/v1/auth/get-me',
     getMeAlfa: 'user/f/getme',
     create: 'api/v1/external-clients/osago-form-create',
-    view: 'api/osaga/show',
+    view: 'api/v1/external-clients/show',
     list: 'api/v1/external-clients/osago-form-list',
     delete: 'api/v1/external-clients/osago-form-delete',
     edit: 'api/v1/external-clients/osago-form-edit',

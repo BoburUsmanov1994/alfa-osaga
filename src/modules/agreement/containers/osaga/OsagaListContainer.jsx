@@ -52,9 +52,21 @@ const ListContainer = ({...rest}) => {
                     },
                     {
                         id: 5,
-                        key: 'insurant',
-                        title: 'Client',
-                        render: ({row}) => get(row, 'insurant.person') ? `${get(row, 'insurant.person.fullName.lastname')} ${get(row, 'insurant.person.fullName.firstname')}  ${get(row, 'insurant.person.fullName.middlename')}` : get(row, 'insurant.organization.name')
+                        key: 'owner',
+                        title: 'Owner',
+                        render: ({row}) => get(row, 'owner.person') ? `${get(row, 'owner.person.fullName.lastname')} ${get(row, 'owner.person.fullName.firstname')}  ${get(row, 'owner.person.fullName.middlename')}` : get(row, 'owner.organization.name')
+                    },
+                    {
+                        id: 55,
+                        key: 'applicant',
+                        title: 'Applicant',
+                        render: ({row}) => get(row, 'applicant.person') ? `${get(row, 'applicant.person.fullName.lastname')} ${get(row, 'applicant.person.fullName.firstname')}  ${get(row, 'applicant.person.fullName.middlename')}` : get(row, 'applicant.organization.name')
+                    },
+                    {
+                        id: 44,
+                        key: 'vehicle',
+                        title: 'Vehicle',
+                        render: ({row}) => get(row,'vehicle.modelCustomName')
                     },
                     {
                         id: 6,
@@ -89,7 +101,7 @@ const ListContainer = ({...rest}) => {
                 createUrl={'/osaga/create'}
                 updateUrl={'/osaga/update'}
                 isHideColumn
-                dataKey={'osago_formId'}
+                dataKey={'application_number'}
                 deleteUrl={URLS.delete}
 
             />

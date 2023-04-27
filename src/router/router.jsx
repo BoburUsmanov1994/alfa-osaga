@@ -11,6 +11,7 @@ import LogOutPage from "../modules/auth/pages/LogOutPage";
 
 const OsagaListPage = lazy(() => import("../modules/agreement/pages/osaga/OsagaListPage"));
 const OsagaAgreementCreatePage = lazy(() => import("../modules/agreement/pages/osaga/OsagaCreatePage"));
+const OsagaViewPage = lazy(() => import("../modules/agreement/pages/osaga/OsagaViewPage"));
 
 const Router = ({...rest}) => {
     return (
@@ -22,6 +23,7 @@ const Router = ({...rest}) => {
                             <Route path={"osaga"}>
                                 <Route index element={<OsagaListPage/>}/>
                                 <Route path={"create"} element={<OsagaAgreementCreatePage/>}/>
+                                <Route path={"view/:application_number"} element={<OsagaViewPage/>}/>
                             </Route>
                             <Route path="/auth/logout" element={<LogOutPage/>}/>
                             <Route path={"auth/*"} element={<Navigate to={'/osaga'} replace/>}/>
