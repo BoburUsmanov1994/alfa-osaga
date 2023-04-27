@@ -330,7 +330,9 @@ const OsagaCreateContainer = () => {
         if (isEqual(name, 'agencyId')) {
             setAgencyId(value)
         }
-
+        if (isEqual(name, 'agentId')) {
+            setAgentId(value)
+        }
     }
 
     const create = ({data}) => {
