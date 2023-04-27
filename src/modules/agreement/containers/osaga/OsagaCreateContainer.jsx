@@ -299,7 +299,7 @@ const OsagaCreateContainer = () => {
             setInsuranceTerm(value)
         }
 
-        if (isEqual(name, 'rpmPercent')) {
+        if (isEqual(name, 'rpm')) {
             setRpmPercent(value)
         }
         if (isEqual(name, 'agentReward')) {
@@ -1064,9 +1064,12 @@ const OsagaCreateContainer = () => {
                         <Row gutterWidth={60} className={'mt-30'}>
                             <Col xs={12} className={'mb-25'}><Title>Водители / Родственники</Title></Col>
                             <Col xs={12}>
-                                <Flex justify={'flex-end'}><Field label={'Количество водителей'} defaultValue={1}
+                                <Flex justify={'flex-end'}>
+                                    <Field label={'Количество водителей'}
+                                           defaultValue={1}
                                                                   options={driverTypeList} type={'radio-group'}
-                                                                  name={'driverType'}/><Button
+                                                                  name={'driverType'}/>
+                                    <Button
                                     onClick={() => setVisible(true)} className={'ml-15'}
                                     type={'button'}>Добавить</Button></Flex>
                             </Col>
@@ -1124,7 +1127,7 @@ const OsagaCreateContainer = () => {
                                             property={{disabled: true}}
                                             label={'Отчисления в РПМ  %'}
                                             type={'input'}
-                                            name={'rpmPercent'}/>
+                                            name={'rpm'}/>
                                     </Col>
                                     <Col xs={6} className={'mb-25'}>
                                         <Field
