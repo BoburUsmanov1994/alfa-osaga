@@ -1,5 +1,5 @@
 import React, {useEffect, useMemo, useState} from 'react';
-import {get, head, isEqual} from "lodash";
+import {find, get, head, isEqual, round, upperCase} from "lodash";
 import Panel from "../../../../components/panel";
 import Search from "../../../../components/search";
 import {Col, Row} from "react-grid-system";
@@ -21,6 +21,8 @@ import {useTranslation} from "react-i18next";
 import dayjs from "dayjs";
 import CarNumber from "../../../../components/car-number";
 import Checkbox from "rc-checkbox";
+import Table from "../../../../components/table";
+import {Trash2} from "react-feather";
 
 
 const ViewContainer = ({application_number = null}) => {
@@ -133,16 +135,16 @@ const ViewContainer = ({application_number = null}) => {
 
     const {
         mutate: sendFond, isLoading: isLoadingFond
-    } = usePostQuery({listKeyId: KEYS.osgorView})
+    } = usePostQuery({listKeyId: KEYS.view})
     const {
         mutate: confirmPayedRequest, isLoading: isLoadingConfirmPayed
-    } = usePostQuery({listKeyId: KEYS.osgorView})
+    } = usePostQuery({listKeyId: KEYS.view})
 
-    const {mutate: deleteRequest, isLoading: deleteLoading} = useDeleteQuery({listKeyId: KEYS.osgorDelete})
+    const {mutate: deleteRequest, isLoading: deleteLoading} = useDeleteQuery({listKeyId: KEYS.delete})
 
     const send = () => {
         sendFond({
-                url: `${URLS.osgorSendFond}?osgor_formId=${application_number}`, attributes: {}
+                url: `${URLS.send}?application_number=${application_number}`, attributes: {}
             },
             {
                 onSuccess: ({data}) => {
@@ -154,7 +156,7 @@ const ViewContainer = ({application_number = null}) => {
 
     const confirmPayed = () => {
         confirmPayedRequest({
-                url: URLS.osgorConfirmPayment, attributes: {
+                url: URLS.confirmPayment, attributes: {
                     uuid: get(data, 'data.result.uuid'),
                     polisUuid: get(head(get(data, 'data.result.policies', [])), 'uuid'),
                     paidAt: dayjs(get(head(get(data, 'data.result.policies', [])), 'issueDate')).format("YYYY-MM-DD HH:mm:ss"),
@@ -189,9 +191,9 @@ const ViewContainer = ({application_number = null}) => {
             },
         }).then((result) => {
             if (result.isConfirmed) {
-                deleteRequest({url: `${URLS.osgorDelete}?osgor_formId=${application_number}`}, {
+                deleteRequest({url: `${URLS.delete}?application_number=${application_number}`}, {
                     onSuccess: () => {
-                        navigate('/osgor')
+                        navigate('/osaga')
                     }
                 })
             }
@@ -202,7 +204,6 @@ const ViewContainer = ({application_number = null}) => {
         return <OverlayLoader/>
     }
 
-    console.log('data', data)
     return (<>
         {(isLoadingFond || deleteLoading || isLoadingConfirmPayed) && <OverlayLoader/>}
         <Panel>
@@ -218,7 +219,16 @@ const ViewContainer = ({application_number = null}) => {
                     <Title>Параметры полиса</Title>
                 </Col>
             </Row>
-            <Form>
+            <Form footer={!isEqual(get(data, 'data.result.status'), 'payed') && <Flex className={'mt-32'}>{(isEqual(get(data, 'data.result.status'), 'new') || isEqual(get(data, 'data.result.status'), 'edited')) && <><Button onClick={remove}
+                                                                                                                                                                                                                                danger type={'button'}
+                                                                                                                                                                                                                                className={'mr-16'}>Удалить</Button>
+                <Button onClick={() => navigate(`/osgor/update/${application_number}`)} yellow type={'button'}
+                        className={'mr-16'}>Изменить</Button></>}
+                <Button onClick={(isEqual(get(data, 'data.result.status'),'new') || isEqual(get(data, 'data.result.status'),'edited')) ? () =>send() : ()=>{}} gray={!(isEqual(get(data, 'data.result.status'),'new') || isEqual(get(data, 'data.result.status'),'edited'))} type={'button'} className={'mr-16'}>Отправить в
+                    Фонд</Button>
+                <Button onClick={isEqual(get(data, 'data.result.status'),'sent') ? ()=>confirmPayed():()=>{}}
+                        type={'button'} gray={!isEqual(get(data, 'data.result.status'),'sent')} className={'mr-16'}>Подтвердить
+                    оплату</Button></Flex>}>
                 <Row gutterWidth={60} className={'mt-32'}>
                     <Col xs={4} style={{borderRight: '1px solid #DFDFDF'}}>
                         <Row align={'center'} className={'mb-25'}>
@@ -823,6 +833,82 @@ const ViewContainer = ({application_number = null}) => {
                                            type={'select'}
                                            name={'applicant.organization.ownershipFormId'}/></Col>
                     </>}
+                </Row>
+                <Row gutterWidth={60} className={'mt-30'}>
+                    <Col xs={12} className={'mb-25'}><Title>Водители / Родственники</Title></Col>
+                    <Col xs={12}>
+                        <div className={'horizontal-scroll '}>
+                            <Table bordered hideThead={false}
+                                   thead={['Фамилия ', 'Имя', 'Отчество', 'Сария паспорта', 'Номер паспорта', 'Pinfl', 'Дата паспорта', 'Серия вод.удостоверения', 'Номер вод.удостоверения', 'Дата вод.удостоверения', 'Степень родства']}>
+                                {
+                                    get(data,'data.result.drivers',[]).map((item, index) => <tr>
+                                        <td>{get(item, 'fullName.lastname')}</td>
+                                        <td>{get(item, 'fullName.firstname')}</td>
+                                        <td>{get(item, 'fullName.middlename')}</td>
+                                        <td>{upperCase(get(item, 'passportData.seria', ''))}</td>
+                                        <td>{get(item, 'passportData.number')}</td>
+                                        <td>{get(item, 'passportData.pinfl')}</td>
+                                        <td>{get(item, 'passportData.issueDate')}</td>
+                                        <td>{get(item, 'licenseSeria')}</td>
+                                        <td>{get(item, 'licenseNumber')}</td>
+                                        <td>{get(item, 'licenseIssueDate')}</td>
+                                        <td>{get(find(relativeList, (r) => get(r, 'value') == get(item, 'relative')), 'label')}</td>
+                                    </tr>)
+                                }
+                            </Table>
+                        </div>
+                    </Col>
+                </Row>
+                <Row gutterWidth={60} className={'mt-30'}>
+                    <Col xs={12} className={'mb-25'}><Title>Агентсткое вознограждение и РПМ</Title></Col>
+                    <Col xs={8}>
+                        <Row>
+                            <Col xs={12} className={'mb-25'}>
+                                <Field
+                                    disabled
+                                    defaultValue={get(data,'data.result.agentId')}
+                                    options={[{label: t('No agent'), value: undefined}, ...agentsList]}
+                                    label={'Агент'}
+                                    type={'select'}
+                                    name={'agentId'}/>
+                            </Col>
+
+                            <Col xs={6} className={'mb-25'}>
+                                <Field
+                                    params={{required: true}}
+                                    property={{type: 'number', disabled: true}}
+                                    defaultValue={20}
+                                    label={'Вознограждение %'}
+                                    type={'input'}
+                                    name={'agentReward'}/>
+                            </Col>
+                            <Col xs={6} className={'mb-25'}>
+                                <Field
+                                    params={{required: true}}
+                                    defaultValue={5}
+                                    property={{disabled: true}}
+                                    label={'Отчисления в РПМ  %'}
+                                    type={'input'}
+                                    name={'rpmPercent'}/>
+                            </Col>
+                            <Col xs={6} className={'mb-25'}>
+                                <Field
+                                    defaultValue={round(get(data,'data.result.agentReward',20) * get(data,'data.result.cost.insurancePremium',0) / 100, 2)}
+                                    property={{disabled: true}}
+                                    label={'Сумма'}
+                                    type={'number-format-input'}
+                                    name={'rewardSum'}/>
+                            </Col>
+                            <Col xs={6} className={'mb-25'}>
+                                <Field
+                                    defaultValue={round(5 * get(data,'data.result.cost.insurancePremium',0)  / 100, 2)}
+                                    property={{disabled: true}}
+                                    label={'Сумма'}
+                                    type={'number-format-input'}
+                                    name={'rpmSum'}/>
+                            </Col>
+                        </Row>
+                    </Col>
                 </Row>
             </Form>
         </Section>
