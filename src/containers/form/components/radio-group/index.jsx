@@ -77,7 +77,6 @@ const RadioGroupComponent = ({
                         }</Radio>)
                     }
                 </RadioGroup>
-
                 <ErrorMessage
                     errors={errors}
                     name={name}
