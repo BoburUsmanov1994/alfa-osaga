@@ -129,7 +129,7 @@ const Index = ({
                 name={'govNumber[0]'}
                 render={({field}) => (
                     <InputMask
-                        disabled
+                        disabled={disabled}
                         defaultValue={slice(defaultValue,0, 2)}
                         {...field}
                         className={`input first`}
@@ -145,7 +145,7 @@ const Index = ({
                 name={'govNumber[1]'}
                 render={({field}) => (
                     <InputMask
-                        disabled
+                        disabled={disabled}
                         defaultValue={slice(defaultValue,2, 3)}
                         {...field}
                         className={`input second`}
@@ -161,7 +161,7 @@ const Index = ({
                 name={'govNumber[2]'}
                 render={({field}) => (
                     <InputMask
-                        disabled
+                        disabled={disabled}
                         defaultValue={slice(defaultValue,3, 6)}
                         {...field}
                         className={`input third`}
@@ -177,7 +177,7 @@ const Index = ({
                 name={'govNumber[3]'}
                 render={({field}) => (
                     <InputMask
-                        disabled
+                        disabled={disabled}
                         defaultValue={slice(defaultValue,6, 8)}
                         {...field}
                         className={`input fourth`}
