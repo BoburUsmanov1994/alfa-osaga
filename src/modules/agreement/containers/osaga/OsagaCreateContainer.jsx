@@ -23,6 +23,7 @@ import Modal from "../../../../components/modal";
 import Table from "../../../../components/table";
 import {Trash2} from "react-feather";
 import {useTranslation} from "react-i18next";
+import {useNavigate} from "react-router-dom";
 
 const getEndDateByInsuranceTerm = (term, startDate) => {
     if (!isNil(term)) {
@@ -67,6 +68,7 @@ const OsagaCreateContainer = () => {
     const [drivers, setDrivers] = useState([])
     const [agencyId, setAgencyId] = useState(null)
     const [agentId, setAgentId] = useState(null)
+    const navigate = useNavigate();
     const {t} = useTranslation()
 
     const setBreadcrumbs = useStore(state => get(state, 'setBreadcrumbs', () => {
@@ -371,8 +373,12 @@ const OsagaCreateContainer = () => {
                 }
             },
             {
-                onSuccess: ({data}) => {
-                    debugger
+                onSuccess: ({data:response}) => {
+                    if (get(response, 'result.application_number')) {
+                        navigate(`/osaga/view/${get(response, 'result.application_number')}`);
+                    } else {
+                        navigate(`/osaga`);
+                    }
                 }
             }
         )
