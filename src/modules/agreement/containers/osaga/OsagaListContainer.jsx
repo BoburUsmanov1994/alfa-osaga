@@ -42,19 +42,19 @@ const ListContainer = ({...rest}) => {
                 tableHeaderData={[
                     {
                         id: 3,
-                        key: 'policies[0].seria',
+                        key: 'seria',
                         title: 'Policy seria',
                     },
                     {
                         id: 4,
-                        key: 'policies[0].number',
+                        key: 'number',
                         title: 'Policy number',
                     },
                     {
                         id: 5,
                         key: 'owner',
                         title: 'Owner',
-                        render: ({row}) => get(row, 'owner.person') ? `${get(row, 'owner.person.fullName.lastname')} ${get(row, 'owner.person.fullName.firstname')}  ${get(row, 'owner.person.fullName.middlename')}` : get(row, 'owner.organization.name')
+                        render: ({row}) => get(row, 'owner.applicantIsOwner') ? (get(row, 'applicant.person') ? `${get(row, 'applicant.person.fullName.lastname')} ${get(row, 'applicant.person.fullName.firstname')}  ${get(row, 'applicant.person.fullName.middlename')}` : get(row, 'applicant.organization.name')) : get(row, 'owner.person') ? `${get(row, 'owner.person.fullName.lastname')} ${get(row, 'owner.person.fullName.firstname')}  ${get(row, 'owner.person.fullName.middlename')}` : get(row, 'owner.organization.name')
                     },
                     {
                         id: 55,
