@@ -82,7 +82,7 @@ const ListContainer = ({...rest}) => {
                     },
                     {
                         id: 8,
-                        key: 'cost.insurancePremium',
+                        key: 'cost.insurancePremiumPaidToInsurer',
                         title: 'Оплачено',
                         render: ({value,row}) => get(row,'status') == 'payed' ? <NumberFormat displayType={'text'} thousandSeparator={' '} value={value}/> : 0
                     },
