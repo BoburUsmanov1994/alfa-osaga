@@ -1111,7 +1111,7 @@ const OsagaCreateContainer = () => {
                                 <Row>
                                     <Col xs={12} className={'mb-25'}>
                                         <Field
-                                            options={[{label: t('No agent'), value: undefined}, ...agentsList]}
+                                            options={[ ...agentsList]}
                                             label={'Агент'}
                                             type={'select'}
                                             name={'agentId'}/>
